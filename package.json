@@ -1,0 +1,23 @@
+{
+  "name": "recommended-badges-warehouse",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@honeybadger-io/js": "^3.0.0",
+    "@salesforce/cli": "^2.49.1",
+    "aws-cdk-lib": "^2.238.0",
+    "axios": "^1.7.2"
+  },
+  "scripts": {
+    "start": "nf start"
+  },
+  "devDependencies": {
+    "@aws/durable-execution-sdk-js-testing": "^1.1.1",
+    "@types/node": "^25.2.3",
+    "esbuild": "^0.18.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
