@@ -1,18 +1,6 @@
 import * as callout from './callout.js';
 import { BASE_BRANCH, PACKAGES_LABEL } from '../config';
 
-async function commentOnPullRequest(pullRequestNumber, commentBody) {
-    await callout.post('github', `/issues/${pullRequestNumber}/comments`, {body: commentBody});
-}
-
-async function getIssueComments(issueNumber) {
-    let issueComments = await callout.get({
-        site: 'github',
-        endpoint: `/issues/${issueNumber}/comments`
-    });
-    return issueComments;
-}
-
 async function getOpenPullRequestDetails(parameters) {
     let pullRequests = await callout.get({
         site: 'github',
@@ -38,9 +26,7 @@ async function mergeOpenPullRequest(pullRequestNumber) {
 }
 
 export {
-    commentOnPullRequest,
     deletePackageLabelFromIssue,
-    getIssueComments,
     getOpenPullRequestDetails,
     mergeOpenPullRequest
 }

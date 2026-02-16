@@ -12,6 +12,7 @@ const AUTH_JWT_GRANT_COMMAND = 'sf org login jwt';
 const LIMITS_API_DISPLAY_COMMAND = 'sf limits api display';
 const PACKAGE_INSTALL_COMMAND = 'sf package install';
 const PACKAGE_VERSION_CREATE_COMMAND = 'sf package version create';
+const PACKAGE_VERSION_CREATE_REPORT_COMMAND = 'sf package version create report';
 const PACKAGE_VERSION_PROMOTE_COMMAND = 'sf package version promote';
 const SOQL_QUERY_COMMAND = 'sf data query';
 
@@ -26,6 +27,7 @@ export {
     PACKAGE_INSTALL_COMMAND,
     PACKAGE_LIMIT_NAME,
     PACKAGE_VERSION_CREATE_COMMAND,
+    PACKAGE_VERSION_CREATE_REPORT_COMMAND,
     PACKAGE_VERSION_ID_PREFIX,
     PACKAGE_VERSION_INCREMENT,
     PACKAGE_VERSION_PROMOTE_COMMAND,
