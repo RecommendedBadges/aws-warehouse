@@ -23,6 +23,15 @@ export class DurableFunctionStack extends cdk.Stack {
 				executionTimeout: cdk.Duration.hours(1),
 				retentionPeriod: cdk.Duration.days(30),
 			},
+			environment: {
+				GITHUB_API_BASE: 'https://api.github.com/repos/RecommendedBadges/RecommendedBadges',
+				REPOSITORY_NAME: 'RecommendedBadges',
+				REPOSITORY_URL: 'github.com/RecommendedBadges/RecommendedBadges',
+				HUB_ALIAS: 'HubOrg',
+				PACKAGE_CREATE_REPORT_WAIT_TIME: '5',
+				PACKAGE_INSTALL_WAIT_TIME: '30',
+				PACKAGE_LIMIT_WAIT_TIME: '6'
+			}
 		});
 
 		const version = durableFunction.currentVersion

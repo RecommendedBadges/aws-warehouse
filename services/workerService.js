@@ -111,7 +111,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					{
 						initialState: { packageLimit },
 						waitStrategy: (state) => {
-							state.packageLimit > 0 ? { shouldContinue : false } : { shouldContinue: true, delay: { hours: 6 }}; // abstract to config var
+							state.packageLimit > 0 ? { shouldContinue : false } : { shouldContinue: true, delay: { hours: process.env.PACKAGE_LIMIT_WAIT_TIME }};
 						}
 					}
 				);
@@ -131,6 +131,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				const result = JSON.parse(stdout).result;
 				if(result.Status !== 'Success' && result.Status !== 'Error') {
 					childContext.waitForCondition(
+						'checkPackageCreationStatus',
 						async (state, _) => {
 							({ stdout, stderr } = await exec(`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`));
 							return { ...state, status: JSON.parse(stdout).result[0].Status};
@@ -142,7 +143,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 							},
 							waitStrategy: (state) => {
 								state.status === 'Success' || state.status === 'Error' ? { shouldContinue: false } : { 
-									shouldContinue: true, delay: { minutes: 5 } // abstract to config var
+									shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME }
 								}
 							}
 						}
@@ -170,7 +171,7 @@ async function installPackages(updatedPackages) {
 	for (let updatedPackageAlias in updatedPackages) {
 		process.stdout.write(`Installing package ${updatedPackageAlias}\n`);
 		let { stderr } = await exec(
-			`${PACKAGE_INSTALL_COMMAND} -p ${updatedPackages[updatedPackageAlias]} -o ${process.env.HUB_ALIAS} -w ${process.env.WAIT_TIME} -r --json`
+			`${PACKAGE_INSTALL_COMMAND} -p ${updatedPackages[updatedPackageAlias]} -o ${process.env.HUB_ALIAS} -w ${process.env.PACKAGE_INSTALL_WAIT_TIME} -r --json`
 		);
 		if (stderr) error.fatal('installPackages()', stderr);
 	}
