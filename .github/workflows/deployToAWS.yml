@@ -24,5 +24,7 @@ jobs:
                 aws-region: "us-east-1"
             - name: Install AWS CDK
               run: npm install -g aws-cdk
+            - name: Install Dependencies
+              run: npm ci
             - name: Deploy to AWS
               run: cdk deploy -a "npx ts-node bin/init.ts" DurableFunctionStack --require-approval never
