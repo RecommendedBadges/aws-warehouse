@@ -19,7 +19,7 @@ export class DurableFunctionStack extends cdk.Stack {
 				sourceMap: true,
 			},
 			durableConfig: {
-				executionTimeout: cdk.Duration.hours(1),
+				executionTimeout: cdk.Duration.minutes(15),
 				retentionPeriod: cdk.Duration.days(30),
 			},
 			environment: {
