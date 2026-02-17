@@ -1,6 +1,7 @@
 import { promisify } from 'node:util';
 import child_process from 'node:child_process';
 import fs from 'node:fs';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 
 import {
 	FORCE_IGNORE_FILENAME,
@@ -30,8 +31,12 @@ let packageAliases = {};
 let reversePackageAliases = {};
 let sfdxProjectJSON = {};
 
+const SECRETS_CLIENT = new SecretsManagerClient({ region: process.env.AWS_REGION });
+const GIT_CONFIG_VARS = {};
+
 async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedPackages = {} }, context) {
 	try {
+		Object.assign(GIT_CONFIG_VARS, JSON.parse((await SECRETS_CLIENT.send(new GetSecretValueCommand({ SecretId: 'warehouse/gitConfigVars' }))).SecretString));
 		await cloneRepo(pullRequestNumber);
 		process.stdout.write('Repo cloned\n');
 
@@ -68,7 +73,7 @@ async function cloneRepo(pullRequestNumber) {
 	}
 
 	({ _, stderr } = await exec(
-		`${GIT_CLONE_COMMAND} -q https://${process.env.GITHUB_USERNAME}:${process.env.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref}`
+		`${GIT_CLONE_COMMAND} -q https://${GIT_CONFIG_VARS.GITHUB_USERNAME}:${process.env.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref}`
 	));
 	if (stderr) error.fatal('cloneRepo()', stderr);
 
@@ -189,7 +194,7 @@ async function pushUpdatedPackageJSON(updatedPackages) {
 		sfdxProjectJSON.packageAliases[updatedPackageAlias] = updatePackages[updatedPackageAlias];
 	}
 	fs.writeFileSync(SFDX_PROJECT_JSON_FILENAME, JSON.stringify(sfdxProjectJSON, null, 2));
-	({ stderr } = await exec(`${GIT_COMMIT_COMMAND}`));
+	({ stderr } = await exec(`${GIT_COMMIT_COMMAND} -m "${COMMIT_MESSAGE}" --author="${GIT_CONFIG_VARS.GIT_COMMIT_NAME} ${GIT_CONFIG_VARS.GIT_COMMIT_EMAIL}"`));
 	if (stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
 
 	({ stderr } = await exec(GIT_PUSH_COMMAND));
