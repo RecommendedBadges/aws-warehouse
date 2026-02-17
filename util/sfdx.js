@@ -1,18 +1,15 @@
 import { promisify } from 'node:util';
 import child_process from 'node:child_process';
-import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 
 import { fatal } from './error.js';
+import { getSecret } from './secretsManager.js';
 import { AUTH_JWT_GRANT_COMMAND, CLI_SERVICE_AGREEMENT, LIMITS_API_DISPLAY_COMMAND, PACKAGE_LIMIT_NAME} from '../config';
 
 const exec = promisify(child_process.exec);
-const SECRETS_CLIENT = new SecretsManagerClient({ region: process.env.AWS_REGION });
 
 async function authorize() {
-    const certSecrets = JSON.parse((await SECRETS_CLIENT.send(new GetSecretValueCommand({ SecretId: 'warehouse/certificate' }))).SecretString);
-    const HUB_CONSUMER_KEY = JSON.parse(
-        ( await SECRETS_CLIENT.send(new GetSecretValueCommand({ SecretId: 'warehouse/hubConsumerKey' }))).SecretString
-    ).HUB_CONSUMER_KEY;
+    const certSecrets = await getSecret('warehouse/certificate');
+    const HUB_CONSUMER_KEY = (await getSecret('warehouse/hubConsumerKey')).HUB_CONSUMER_KEY;
     let stderr;
 
     ({stderr} = await exec(

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { API_BASES, REQUEST_HEADERS } from '../config';
+import { API_BASES, getRequestHeaders } from '../config';
 import { fatal } from './error.js';
 
 async function get({site, endpoint, fullUrl}) {
@@ -8,7 +8,7 @@ async function get({site, endpoint, fullUrl}) {
         const res = await axios.get(
             fullUrl ? fullUrl : `${API_BASES[site]}${endpoint}`,
             {
-                headers: REQUEST_HEADERS[site]
+                headers: await getRequestHeaders()[site]
             },
         );
         return res.data;
@@ -17,18 +17,18 @@ async function get({site, endpoint, fullUrl}) {
     }
 }
 
-function generateRequest(site, endpoint, body) {
+async function generateRequest(site, endpoint, body) {
     let request;
     if(body) {
         request = [
             `${API_BASES[site]}${endpoint}`,
             body,
-            {headers: REQUEST_HEADERS[site]}
+            {headers: await getRequestHeaders()[site]}
         ];
     } else {
         request = [
             `${API_BASES[site]}${endpoint}`,
-            {headers: REQUEST_HEADERS[site]}
+            {headers: await getRequestHeaders()[site]}
         ]
     }
     return request;
