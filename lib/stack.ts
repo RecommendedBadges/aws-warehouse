@@ -33,6 +33,7 @@ export class DurableFunctionStack extends cdk.Stack {
 				PACKAGE_LIMIT_WAIT_TIME: '6'
 			}
 		});
+		durableFunction.addFunctionUrl();
 
 		const version = durableFunction.currentVersion
 		const alias = new lambda.Alias(this, "ProdAlias", {
