@@ -36,7 +36,10 @@ const GIT_CONFIG_VARS = {};
 
 async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedPackages = {} }, context) {
 	try {
-		Object.assign(GIT_CONFIG_VARS, JSON.parse((await SECRETS_CLIENT.send(new GetSecretValueCommand({ SecretId: 'warehouse/gitConfigVars' }))).SecretString));
+		Object.assign(
+			GIT_CONFIG_VARS, 
+			JSON.parse((await SECRETS_CLIENT.send(new GetSecretValueCommand({ SecretId: 'warehouse/gitConfigVars' }))).SecretString)
+		);
 		await cloneRepo(pullRequestNumber);
 		process.stdout.write('Repo cloned\n');
 
@@ -73,7 +76,7 @@ async function cloneRepo(pullRequestNumber) {
 	}
 
 	({ _, stderr } = await exec(
-		`${GIT_CLONE_COMMAND} -q https://${GIT_CONFIG_VARS.GITHUB_USERNAME}:${process.env.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref}`
+		`${GIT_CLONE_COMMAND} -q https://${GIT_CONFIG_VARS.GITHUB_USERNAME}:${GIT_CONFIG_VARS.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref}`
 	));
 	if (stderr) error.fatal('cloneRepo()', stderr);
 
