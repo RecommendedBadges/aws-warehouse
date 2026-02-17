@@ -13,7 +13,6 @@ export class DurableFunctionStack extends cdk.Stack {
 			entry: path.join(__dirname, '..', 'lambda', 'index.ts'),
 			runtime: lambda.Runtime.NODEJS_22_X,
 			handler: 'handler',
-			timeout: cdk.Duration.minutes(15),
 			functionName: "PackagingLambda",
 			bundling: {
 				minify: false,
