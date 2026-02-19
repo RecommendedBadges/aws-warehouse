@@ -16,7 +16,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Enable Auto-Merge for Dependabot PRs
-        if: ${{(contains(steps.dependabot-metadata.outputs.dependency-names, '@salesforce/cli')) || (contains(steps.dependabot-metadata.outputs.dependency-names, 'bull')) || (contains(steps.dependabot-metadata.outputs.dependency-names, 'axios'))}}
+        if: ${{(contains(steps.dependabot-metadata.outputs.dependency-names, '@salesforce/cli')) || (contains(steps.dependabot-metadata.outputs.dependency-names, 'aws')) || (contains(steps.dependabot-metadata.outputs.dependency-names, 'axios'))}}
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
