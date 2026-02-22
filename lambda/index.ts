@@ -3,7 +3,6 @@ import { orchestrate } from '../services';
 
 export const handler = withDurableExecution(async (event, context: DurableContext) => {
 	const pullRequestNumber = event.pullRequestNumber;
-	const jobNumber = event.jobNumber; // still needed?
 	const sortedPackagesToUpdate = event.sortedPackagesToUpdate;
 
 	try {
