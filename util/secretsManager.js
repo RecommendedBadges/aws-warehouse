@@ -7,7 +7,12 @@ export async function getSecret(secretId) {
     if(secrets[secretId]) {
         return secrets[secretId];
     }
-    const secret = JSON.parse((await secretsClient.send(new GetSecretValueCommand({ SecretId: secretId })))).SecretString;
+    try {
+        const secret = JSON.parse((await secretsClient.send(new GetSecretValueCommand({ SecretId: secretId })))).SecretString;
+    } catch(err) {
+        process.stderr.write(`error retrieving secret ${secretId}: ${err}`);
+        process.exit(1);
+    }
     secrets[secretId] = secret;
     return secret;
 }

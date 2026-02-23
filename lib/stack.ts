@@ -39,10 +39,6 @@ export class DurableFunctionStack extends cdk.Stack {
 			version: version,
 		});
 
-		new lambda.FunctionUrl(this, 'FunctionUrl', {
-			function: alias
-		});
-
 		new cdk.CfnOutput(this, "FunctionAliasArn", {
 			value: alias.functionArn,
 		});
