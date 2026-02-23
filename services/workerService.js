@@ -117,14 +117,14 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					}
 				);
 
-				query = `SELECT MajorVersion, MinorVersion, PatchVersion, ReleaseState FROM Package2Version WHERE Package2.Name='${packageToUpdate}' ORDER BY MajorVersion DESC, MinorVersion DESC, PatchVersion DESC`;
+				query = `SELECT MajorVersion, MinorVersion, PatchVersion, IsReleased FROM Package2Version WHERE Package2.Name='${packageToUpdate}' ORDER BY MajorVersion DESC, MinorVersion DESC, PatchVersion DESC`;
 				({ stdout, stderr } = await exec(`${SOQL_QUERY_COMMAND} -q "${query}" -t -o ${process.env.HUB_ALIAS} --json`));
 				if(stderr) error.fatal('updatePackages()', stderr);
 				let latestPackageVersion = JSON.parse(stdout).result.records[0];
-				let newPackageVersionNumber = latestPackageVersion.ReleaseState === 'Released' ? 
+				let newPackageVersionNumber = latestPackageVersion.IsReleased ? 
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion + PACKAGE_VERSION_INCREMENT}.${latestPackageVersion.PatchVersion}.${PACKAGE_BUILD_NUMBER}` :
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion}.${latestPackageVersion.PatchVersion + 1}.${Number.parseInt(latestPackageVersion.BuildNumber) + 1}`;
-				let newPackageVersionName = latestPackageVersion.ReleaseState === 'Released' ? 
+				let newPackageVersionName = latestPackageVersion.IsReleased ? 
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion + PACKAGE_VERSION_INCREMENT}` :
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion}`;
 				process.stdout.write(`Creating package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
