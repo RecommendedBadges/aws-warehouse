@@ -6,7 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.997.0",
-    "@salesforce/cli": "^2.125.0",
+    "@salesforce/cli": "^2.125.2",
     "aws-cdk-lib": "^2.240.0",
     "axios": "^1.7.2"
   },
