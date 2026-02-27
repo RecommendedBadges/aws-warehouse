@@ -34,9 +34,9 @@ export class DurableFunctionStack extends cdk.Stack {
 			}
 		});*/
 
-		const durableFunction = new DockerImageFunction(this, "PackagingLambda", {
+		const durableFunction = new DockerImageFunction(this, "DurableContainerPackagingLambda", {
 			code: lambda.DockerImageCode.fromEcr(cdk.aws_ecr.Repository.fromRepositoryName(this, 'PackagingLambdaRepo', 'packaging-lambda-repo')),
-			functionName: "PackagingLambda",
+			functionName: "DurableContainerPackagingLambda",
 			durableConfig: {
 				executionTimeout: cdk.Duration.minutes(15),
 				retentionPeriod: cdk.Duration.days(30),
