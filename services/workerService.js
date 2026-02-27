@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { promisify } from 'node:util';
 import child_process from 'node:child_process';
 import fs from 'node:fs';
@@ -68,19 +69,16 @@ async function cloneRepo(pullRequestNumber) {
 	}
 
 	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
-	process.stdout.write(`gitConfigVars: ${JSON.stringify(gitConfigVars)}`);
 	({ _, stderr } = await exec(
 		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} /tmp`
 	));
 	if (stderr) error.fatal('cloneRepo()', stderr);
 
 	try {
-		process.chdir(process.env.REPOSITORY_NAME);
+		process.chdir(path.join('/tmp', process.env.REPOSITORY_NAME));
 	} catch (err) {
 		error.fatal('cloneRepo()', err);
 	}
-		process.exit(1);
-
 }
 
 function parseSFDXProjectJSON() {

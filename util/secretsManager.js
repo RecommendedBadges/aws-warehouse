@@ -9,7 +9,6 @@ export async function getSecret(secretId) {
     }
     try {
         const secret = (await secretsClient.send(new GetSecretValueCommand({ SecretId: secretId }))).SecretString;
-        process.stdout.write(`secret ${JSON.stringify(secret)}`);
         secrets[secretId] = secret;
         return secret;
     } catch(err) {
