@@ -69,9 +69,8 @@ async function cloneRepo(pullRequestNumber) {
 
 	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
 	process.stdout.write(`gitConfigVars: ${JSON.stringify(gitConfigVars)}`);
-	process.exit(1);
 	({ _, stderr } = await exec(
-		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref}`
+		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} /tmp`
 	));
 	if (stderr) error.fatal('cloneRepo()', stderr);
 
@@ -80,6 +79,8 @@ async function cloneRepo(pullRequestNumber) {
 	} catch (err) {
 		error.fatal('cloneRepo()', err);
 	}
+		process.exit(1);
+
 }
 
 function parseSFDXProjectJSON() {
