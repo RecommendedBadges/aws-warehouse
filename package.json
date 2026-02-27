@@ -5,16 +5,19 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@aws-cdk/aws-lambda": "^1.203.0",
     "@aws-sdk/client-secrets-manager": "^3.994.0",
     "@salesforce/cli": "^2.125.0",
     "aws-cdk-lib": "^2.239.0",
     "axios": "^1.7.2"
   },
   "scripts": {
-    "start": "nf start"
+    "start": "nf start",
+    "build": "esbuild lambda/index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js"
   },
   "devDependencies": {
     "@aws/durable-execution-sdk-js-testing": "^1.1.1",
+    "@types/aws-lambda": "^8.10.161",
     "@types/node": "^25.3.0",
     "esbuild": "^0.27.3",
     "ts-node": "^10.9.2",
