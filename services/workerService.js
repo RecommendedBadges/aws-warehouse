@@ -75,12 +75,10 @@ async function cloneRepo(pullRequestNumber) {
 	if (stderr) error.fatal('cloneRepo()', stderr);
 
 	try {
-		process.chdir(process.env.REPOSITORY_NAME);
+		process.chdir(path.join('/tmp', process.env.REPOSITORY_NAME));
 	} catch (err) {
 		error.fatal('cloneRepo()', err);
 	}
-		process.exit(1);
-
 }
 
 function parseSFDXProjectJSON() {
