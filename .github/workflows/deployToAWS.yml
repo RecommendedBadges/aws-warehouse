@@ -22,6 +22,17 @@ jobs:
               with:
                 role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
                 aws-region: "us-east-1"
+            - name: Login to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@main
+            - name: Build and Push Docker Image
+              env:
+                ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+                ECR_REPOSITORY: packaging-lambda-repo
+                IMAGE_TAG: latest
+              run: |
+                docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+                docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
             - name: Install AWS CDK
               run: npm install -g aws-cdk
             - name: Install Dependencies
