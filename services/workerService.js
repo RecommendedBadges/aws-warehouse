@@ -33,7 +33,6 @@ let sfdxProjectJSON = {};
 
 async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedPackages = {} }, context) {
 	try {
-		process.stdout.write(`current directory ${__dirname}\n`);
 		await cloneRepo(pullRequestNumber);
 		process.stdout.write('Repo cloned\n');
 
@@ -64,9 +63,7 @@ async function cloneRepo(pullRequestNumber) {
 
 	if (fs.existsSync(path.join('/tmp', process.env.REPOSITORY_NAME))) {
 		({ _, stderr } = await exec(`rm -rf ${path.join('/tmp', process.env.REPOSITORY_NAME)}`));
-		if (stderr) {
-			error.fatal('cloneRepo()', stderr);
-		}
+		if (stderr) error.fatal('cloneRepo()', stderr);
 	}
 
 	try {
