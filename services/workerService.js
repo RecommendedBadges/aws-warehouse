@@ -33,6 +33,7 @@ let sfdxProjectJSON = {};
 
 async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedPackages = {} }, context) {
 	try {
+		process.stdout.write(`current directory ${__dirname}\n`);
 		await cloneRepo(pullRequestNumber);
 		process.stdout.write('Repo cloned\n');
 
