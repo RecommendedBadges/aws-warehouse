@@ -11,9 +11,11 @@ const exec = promisify(child_process.exec);
 async function authorize() {
     const certSecrets = await getSecret('warehouse/certificate');
     const HUB_CONSUMER_KEY = (await getSecret('warehouse/hubConsumerKey')).HUB_CONSUMER_KEY;
+    const SERVER_KEY = (await getSecret('warehouse/serverKey')).SERVER_KEY;
+    const HUB_USERNAME = (await getSecret('warehouse/hubUsername')).HUB_USERNAME;
     let stderr;
 
-    process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_TASK_ROOT}\n`);
+    /*process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_TASK_ROOT}\n`);
     let stdout;
     ({stdout, stderr} = await exec(`ls ${process.env.LAMBDA_TASK_ROOT}`));
     process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_RUNTIME_DIR}\n`);
@@ -21,18 +23,20 @@ async function authorize() {
     process.stdout.write(`stdout from ls command: ${stdout}\n`);
     ({stdout, stderr} = await exec('find server.key.enc /var/task/',  {maxBuffer: 1024 * 5000}));
     if(stderr) fatal('authorize()', stderr);
-    process.stdout.write(`stdout from find command: ${stdout}\n`);
-    process.exit(1);
+    process.stdout.write(`stdout from find command: ${stdout}\n`);*/
 
-    ({stderr} = await exec(
+    ({stderr} = await exec(`echo ${SERVER_KEY} | base64 --decode > ./server.key`));
+    if(stderr) fatal('authorize()', stderr);
+
+    /*({stderr} = await exec(
         `openssl enc -nosalt -aes-256-cbc -d -in ${path.join('/var', 'task', 'assets', 'server.key.enc')} -out ${path.join('/var', 'task', 'assets', 'server.key')} -base64 -K ${certSecrets.DECRYPTION_KEY} -iv ${certSecrets.DECRYPTION_IV}`
     ));
     if(stderr) {
         fatal('authorize()', stderr);
-    }
+    }*/
 
     ({stderr} = await exec(
-        `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f assets/server.key -o $HUB_USERNAME -d -a $HUB_ALIAS`
+        `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ./server.key -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`
     ));
     if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
         fatal('authorize()', stderr);
