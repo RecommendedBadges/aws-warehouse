@@ -25,7 +25,7 @@ async function authorize() {
     if(stderr) fatal('authorize()', stderr);
     process.stdout.write(`stdout from find command: ${stdout}\n`);*/
 
-    ({stderr} = await exec(`echo ${SERVER_KEY} | base64 --decode > ./server.key`));
+    ({stderr} = await exec(`echo ${SERVER_KEY} | base64 -di > ./server.key`));
     if(stderr) fatal('authorize()', stderr);
 
     /*({stderr} = await exec(
