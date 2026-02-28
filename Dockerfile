@@ -13,8 +13,7 @@ RUN dnf install -y git
 RUN dnf install -y openssl
 ENV LD_LIBRARY_PATH=""
 RUN openssl version
-# temp for debugging
-RUN dnf install -y findutils
+RUN alias npm-exec='PATH=$(npm bin):$PATH'
 WORKDIR ${LAMBDA_TASK_ROOT}
 COPY --from=builder /usr/app/dist/* ./
 CMD ["index.handler"]
