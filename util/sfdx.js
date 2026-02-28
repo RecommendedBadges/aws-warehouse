@@ -37,6 +37,7 @@ async function authorize() {
             fatal('authorize()', stderr);
         }
     } catch(err) {
+        process.stdout.write(`Error authorizing with SFDX CLI: ${stderr}\n`);
         fatal('authorize()', err);
     }
 }
