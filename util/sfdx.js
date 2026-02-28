@@ -25,8 +25,20 @@ async function authorize() {
     if(stderr) fatal('authorize()', stderr);
     process.stdout.write(`stdout from find command: ${stdout}\n`);*/
 
+    try {
+        fs.writeFileSync('./server.key', Buffer.from(SERVER_KEY, 'base64').toString('utf8'));
+    } catch(err) {
+        fatal('authorize()', err);
+    }
+/*// Create a buffer from the string
+let bufferObj = Buffer.from(base64string, "base64");
+
+// Encode the Buffer as a utf8 string
+let decodedString = bufferObj.toString("utf8");
+
+
     ({stderr} = await exec(`echo "${SERVER_KEY}" | base64 -di > ./server.key`));
-    if(stderr) fatal('authorize()', stderr);
+    if(stderr) fatal('authorize()', stderr);*/
 
     /*({stderr} = await exec(
         `openssl enc -nosalt -aes-256-cbc -d -in ${path.join('/var', 'task', 'assets', 'server.key.enc')} -out ${path.join('/var', 'task', 'assets', 'server.key')} -base64 -K ${certSecrets.DECRYPTION_KEY} -iv ${certSecrets.DECRYPTION_IV}`
