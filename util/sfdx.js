@@ -21,15 +21,6 @@ async function authorize() {
     } catch(err) {
         fatal('authorize()', err);
     }
-/*// Create a buffer from the string
-let bufferObj = Buffer.from(base64string, "base64");
-
-// Encode the Buffer as a utf8 string
-let decodedString = bufferObj.toString("utf8");
-
-
-    ({stderr} = await exec(`echo "${SERVER_KEY}" | base64 -di > ./server.key`));
-    if(stderr) fatal('authorize()', stderr);*/
 
     /*({stderr} = await exec(
         `openssl enc -nosalt -aes-256-cbc -d -in ${path.join('/var', 'task', 'assets', 'server.key.enc')} -out ${path.join('/var', 'task', 'assets', 'server.key')} -base64 -K ${certSecrets.DECRYPTION_KEY} -iv ${certSecrets.DECRYPTION_IV}`
@@ -38,11 +29,15 @@ let decodedString = bufferObj.toString("utf8");
         fatal('authorize()', stderr);
     }*/
 
-    ({stderr} = await exec(
-        `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ./server.key -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`
-    ));
-    if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
-        fatal('authorize()', stderr);
+    try{
+        ({stderr} = await exec(
+            `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ./server.key -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`
+        ));
+        if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
+            fatal('authorize()', stderr);
+        }
+    } catch(err) {
+        fatal('authorize()', err);
     }
 }
 
