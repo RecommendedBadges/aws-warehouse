@@ -13,8 +13,11 @@ async function authorize() {
     const HUB_CONSUMER_KEY = (await getSecret('warehouse/hubConsumerKey')).HUB_CONSUMER_KEY;
     let stderr;
 
+    process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_TASK_ROOT}\n`);
     let stdout;
-    ({stdout, stderr} = await exec('find server.key.enc /',  {maxBuffer: 1024 * 5000}));
+    ({stdout, stderr} = await exec(`ls ${process.env.LAMBDA_TASK_ROOT}`));
+    process.stdout.write(`stdout from ls command: ${stdout}\n`);
+    ({stdout, stderr} = await exec('find server.key.enc /var/task/',  {maxBuffer: 1024 * 5000}));
     if(stderr) fatal('authorize()', stderr);
     process.stdout.write(`stdout from find command: ${stdout}\n`);
     process.exit(1);
