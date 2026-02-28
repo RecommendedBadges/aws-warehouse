@@ -32,6 +32,13 @@ async function authorize() {
 
     try{
         ({stdout, stderr} = await exec(
+            `sf`
+        ));
+        if(stderr) {
+            fatal('authorize()', stderr);
+        }
+        process.stdout.write(`sf command stdout: ${stdout}\n`);
+        ({stdout, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ./server.key -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`
         ));
         if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
