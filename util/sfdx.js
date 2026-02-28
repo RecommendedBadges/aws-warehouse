@@ -1,5 +1,6 @@
 import { promisify } from 'node:util';
 import child_process from 'node:child_process';
+import path from 'node:path';
 
 import { fatal } from './error.js';
 import { getSecret } from './secretsManager.js';
