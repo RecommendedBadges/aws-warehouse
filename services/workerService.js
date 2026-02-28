@@ -37,6 +37,7 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 		process.stdout.write('Repo cloned\n');
 
 		parseSFDXProjectJSON();
+		await createAlias();
 		await sfdx.authorize();
 		let packageLimit = await sfdx.getRemainingPackageNumber();
 		process.stdout.write(`Remaining package version creation limit is ${packageLimit}\n`);
@@ -55,6 +56,11 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 	} catch (err) {
 		error.fatal('orchestrate()', err);
 	}
+}
+
+async function createAlias() {
+	const { _, stderr } = await exec('alias npm-exec="PATH=$(npm bin):$PATH"');
+	if(stderr) error.fatal('createAlias()', stderr);
 }
 
 async function cloneRepo(pullRequestNumber) {
