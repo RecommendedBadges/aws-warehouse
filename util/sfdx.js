@@ -12,9 +12,9 @@ async function authorize() {
     const HUB_CONSUMER_KEY = (await getSecret('warehouse/hubConsumerKey')).HUB_CONSUMER_KEY;
     let stderr;
 
-    let stdout;
+    /*let stdout;
     ({stdout, stderr} = await exec('which openssl'));
-    process.stdout.write(stdout);
+    process.stdout.write(stdout);*/
 
 
     ({stderr} = await exec(
