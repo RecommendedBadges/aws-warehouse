@@ -17,7 +17,9 @@ async function authorize() {
     let stderr;
 
     process.stdout.write(`serverKey secret: ${await getSecret('warehouse/serverKey')}\n`);
-    process.stdout.write(`serverKey secret: ${(await getSecret('warehouse/serverKey')).SERVER_KEY}\n`);
+        process.stdout.write(`serverKey secret: ${Object.keys(await getSecret('warehouse/serverKey'))}\n`);
+
+    process.stdout.write(`serverKey secret: ${(await getSecret('warehouse/serverKey'))["SERVER_KEY"]}\n`);
 
 
     /*process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_TASK_ROOT}\n`);
