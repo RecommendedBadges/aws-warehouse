@@ -30,14 +30,16 @@ async function authorize() {
     }*/
 
     try{
-        ({stderr} = await exec(
+        ({stdout, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ./server.key -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`
         ));
         if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
             fatal('authorize()', stderr);
         }
     } catch(err) {
-        process.stdout.write(`Error authorizing with SFDX CLI: ${stderr}\n`);
+        process.stdout.write(`Error authorizing with SFDX CLI stderr: ${stderr}\n`);
+                process.stdout.write(`Error authorizing with SFDX CLI stdout: ${stdout}\n`);
+
         fatal('authorize()', err);
     }
 }
