@@ -62,7 +62,7 @@ async function cloneRepo(pullRequestNumber) {
 	let pullRequest = await github.getOpenPullRequestDetails({ pullRequestNumber });
 	let stderr;
 
-	if (fs.existsSync(process.env.REPOSITORY_NAME)) {
+	if (fs.existsSync(path.join('/tmp', process.env.REPOSITORY_NAME))) {
 		({ _, stderr } = await exec(`rm -rf ${path.join('/tmp', process.env.REPOSITORY_NAME)}`));
 		if (stderr) {
 			error.fatal('cloneRepo()', stderr);
