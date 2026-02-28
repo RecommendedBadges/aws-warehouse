@@ -16,6 +16,8 @@ async function authorize() {
     process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_TASK_ROOT}\n`);
     let stdout;
     ({stdout, stderr} = await exec(`ls ${process.env.LAMBDA_TASK_ROOT}`));
+    process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_RUNTIME_DIR}\n`);
+    ({stdout, stderr} = await exec(`ls ${process.env.LAMBDA_RUNTIME_DIR}`));
     process.stdout.write(`stdout from ls command: ${stdout}\n`);
     ({stdout, stderr} = await exec('find server.key.enc /var/task/',  {maxBuffer: 1024 * 5000}));
     if(stderr) fatal('authorize()', stderr);
