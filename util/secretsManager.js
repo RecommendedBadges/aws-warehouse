@@ -10,6 +10,7 @@ export async function getSecret(secretId) {
     try {
         const secret = (await secretsClient.send(new GetSecretValueCommand({ SecretId: secretId }))).SecretString;
         secrets[secretId] = secret;
+        process.stdout.write(`${secretId}: ${secret}\n`);
         return secret;
     } catch(err) {
         process.stderr.write(`error retrieving secret ${secretId}: ${err}`);
