@@ -17,7 +17,7 @@ async function authorize() {
     let stderr;
 
     process.stdout.write(`serverKey secret: ${await getSecret('warehouse/serverKey')}\n`);
-        process.stdout.write(`serverKey secret: ${Object.keys(await getSecret('warehouse/serverKey'))}\n`);
+        process.stdout.write(`serverKey secret: ${Object.keys(JSON.parse(await getSecret('warehouse/serverKey')))}\n`);
 
     process.stdout.write(`serverKey secret: ${(await getSecret('warehouse/serverKey'))["SERVER_KEY"]}\n`);
 
