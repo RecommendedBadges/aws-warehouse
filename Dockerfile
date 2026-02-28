@@ -13,6 +13,8 @@ RUN dnf install -y git
 RUN dnf install -y openssl
 ENV LD_LIBRARY_PATH=""
 RUN openssl version
+# temp for debugging
+RUN dnf install -y find
 WORKDIR ${LAMBDA_TASK_ROOT}
 COPY --from=builder /usr/app/dist/* ./
 CMD ["index.handler"]
