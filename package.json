@@ -9,7 +9,7 @@
     "@aws-sdk/client-secrets-manager": "^3.994.0",
     "@salesforce/cli": "^2.125.0",
     "aws-cdk-lib": "^2.239.0",
-    "axios": "^1.7.2"
+    "axios": "^1.13.6"
   },
   "scripts": {
     "start": "nf start",

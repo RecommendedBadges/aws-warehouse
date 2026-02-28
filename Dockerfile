@@ -10,6 +10,7 @@ RUN microdnf install -y dnf
 RUN dnf check-update
 RUN dnf upgrade -y
 RUN dnf install -y git
+RUN dnf install -y openssl
 WORKDIR ${LAMBDA_TASK_ROOT}
 COPY --from=builder /usr/app/dist/* ./
 CMD ["index.handler"]
