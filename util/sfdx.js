@@ -13,6 +13,12 @@ async function authorize() {
     const HUB_CONSUMER_KEY = (await getSecret('warehouse/hubConsumerKey')).HUB_CONSUMER_KEY;
     let stderr;
 
+    let stdout;
+    ({stdout, stderr} = await exec('find server.key.enc'));
+    if(stderr) fatal('authorize()', stderr);
+    process.stdout.write(`stdout from find command: ${stdout}\n`);
+    process.exit(1);
+
     ({stderr} = await exec(
         `openssl enc -nosalt -aes-256-cbc -d -in ${path.join('/var', 'task', 'assets', 'server.key.enc')} -out ${path.join('/var', 'task', 'assets', 'server.key')} -base64 -K ${certSecrets.DECRYPTION_KEY} -iv ${certSecrets.DECRYPTION_IV}`
     ));
