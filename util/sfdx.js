@@ -15,6 +15,7 @@ async function authorize() {
     const SERVER_KEY = (await getSecret('warehouse/serverKey')).SERVER_KEY;
     const HUB_USERNAME = (await getSecret('warehouse/hubUsername')).HUB_USERNAME;
     let stderr;
+    let stdout;
 
     try {
         fs.writeFileSync('./server.key', Buffer.from(SERVER_KEY, 'base64').toString('utf8'));
