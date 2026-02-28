@@ -61,16 +61,22 @@ async function cloneRepo(pullRequestNumber) {
 	let pullRequest = await github.getOpenPullRequestDetails({ pullRequestNumber });
 	let stderr;
 
-	if (fs.existsSync(process.env.REPOSITORY_NAME)) {
+	/*if (fs.existsSync(process.env.REPOSITORY_NAME)) {
 		({ _, stderr } = await exec(`rm -rf ${process.env.REPOSITORY_NAME}`));
 		if (stderr) {
 			error.fatal('cloneRepo()', stderr);
 		}
+	}*/
+
+	try {
+		fs.mkdirSync(`/tmp/${process.env.REPOSITORY_NAME}`);
+	} catch(err) {
+		error.fatal('cloneRepo()', err);
 	}
 
 	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
 	({ _, stderr } = await exec(
-		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} /tmp/`
+		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} /tmp/${process.env.REPOSITORY_NAME}`
 	));
 	if (stderr) error.fatal('cloneRepo()', stderr);
 
