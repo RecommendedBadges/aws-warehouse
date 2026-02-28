@@ -12,6 +12,11 @@ async function authorize() {
     const HUB_CONSUMER_KEY = (await getSecret('warehouse/hubConsumerKey')).HUB_CONSUMER_KEY;
     let stderr;
 
+    let stdout;
+    ({stdout, stderr} = await exec('which openssl'));
+    process.stdout.write(stdout);
+
+
     ({stderr} = await exec(
         `openssl enc -nosalt -aes-256-cbc -d -in ../assets/server.key.enc -out assets/server.key -base64 -K ${certSecrets.DECRYPTION_KEY} -iv ${certSecrets.DECRYPTION_IV}`
     ));
