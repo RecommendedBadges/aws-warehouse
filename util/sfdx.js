@@ -40,7 +40,7 @@ async function authorize() {
     } catch(err) {
         process.stdout.write(`Error authorizing with SFDX CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error authorizing with SFDX CLI stdout: ${stdout}\n`);
-        ({ stdout, stderr} = await exec(`cat ${path.join('~', '.sf', 'sf-2026-02-28.log')}`))
+        ({ stdout, stderr} = await exec(`ls ${path.join('~', '.sf')}`))
         process.stdout.write(`Error authorizing with SFDX CLI cat stderr: ${stderr}\n`);
         process.stdout.write(`Error authorizing with SFDX CLI cat stdout: ${stdout}\n`);
 
