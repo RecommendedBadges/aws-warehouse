@@ -16,22 +16,6 @@ async function authorize() {
     const HUB_USERNAME = (await getSecret('warehouse/hubUsername')).HUB_USERNAME;
     let stderr;
 
-    process.stdout.write(`serverKey secret: ${await getSecret('warehouse/serverKey')}\n`);
-    process.stdout.write(`serverKey secret: ${(await getSecret('warehouse/serverKey'))["SERVER_KEY"]}\n`);
-        process.stdout.write(`serverKey secret: ${(SERVER_KEY)}\n`);
-
-
-
-    /*process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_TASK_ROOT}\n`);
-    let stdout;
-    ({stdout, stderr} = await exec(`ls ${process.env.LAMBDA_TASK_ROOT}`));
-    process.stdout.write(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_RUNTIME_DIR}\n`);
-    ({stdout, stderr} = await exec(`ls ${process.env.LAMBDA_RUNTIME_DIR}`));
-    process.stdout.write(`stdout from ls command: ${stdout}\n`);
-    ({stdout, stderr} = await exec('find server.key.enc /var/task/',  {maxBuffer: 1024 * 5000}));
-    if(stderr) fatal('authorize()', stderr);
-    process.stdout.write(`stdout from find command: ${stdout}\n`);*/
-
     try {
         fs.writeFileSync('./server.key', Buffer.from(SERVER_KEY, 'base64').toString('utf8'));
     } catch(err) {
