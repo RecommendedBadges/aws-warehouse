@@ -14,7 +14,7 @@ async function authorize() {
     let stderr;
 
     let stdout;
-    ({stdout, stderr} = await exec('find server.key.enc /'));
+    ({stdout, stderr} = await exec('find server.key.enc /',  {maxBuffer: 1024 * 500}));
     if(stderr) fatal('authorize()', stderr);
     process.stdout.write(`stdout from find command: ${stdout}\n`);
     process.exit(1);
