@@ -10,6 +10,7 @@ import {
 	GIT_COMMIT_COMMAND,
 	GIT_PULL_COMMAND,
 	GIT_PUSH_COMMAND,
+	GIT_REPO_FOLDER,
 	PACKAGE_ALIAS_DELIMITER,
 	PACKAGE_BUILD_NUMBER,
 	PACKAGE_ID_PREFIX,
@@ -38,6 +39,7 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 
 		parseSFDXProjectJSON();
 		await sfdx.authorize();
+		process.exit(1);
 		let packageLimit = await sfdx.getRemainingPackageNumber();
 		process.stdout.write(`Remaining package version creation limit is ${packageLimit}\n`);
 		process.stdout.write(`List of packages to update is ${sortedPackagesToUpdate.join(', ')}\n`);
@@ -61,33 +63,35 @@ async function cloneRepo(pullRequestNumber) {
 	let pullRequest = await github.getOpenPullRequestDetails({ pullRequestNumber });
 	let stderr;
 
-	if (fs.existsSync(path.join('/tmp', process.env.REPOSITORY_NAME))) {
-		({ _, stderr } = await exec(`rm -rf ${path.join('/tmp', process.env.REPOSITORY_NAME)}`));
+	if (fs.existsSync(GIT_REPO_FOLDER)) {
+		({ _, stderr } = await exec(`rm -rf ${GIT_REPO_FOLDER}`));
 		if (stderr) error.fatal('cloneRepo()', stderr);
 	}
 
 	try {
-		fs.mkdirSync(path.join('/tmp', process.env.REPOSITORY_NAME));
+		fs.mkdirSync(GIT_REPO_FOLDER);
 	} catch(err) {
 		error.fatal('cloneRepo()', err);
 	}
 
 	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
 	({ _, stderr } = await exec(
-		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} ${path.join('/tmp', process.env.REPOSITORY_NAME)}`
+		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} ${GIT_REPO_FOLDER}`
 	));
 	if (stderr) error.fatal('cloneRepo()', stderr);
 
+	/*
 	try {
-		process.chdir(path.join('/tmp', process.env.REPOSITORY_NAME));
+		process.chdir(GIT_REPO_FOLDER);
 	} catch (err) {
 		error.fatal('cloneRepo()', err);
 	}
+	*/
 }
 
 function parseSFDXProjectJSON() {
 	try {
-		sfdxProjectJSON = JSON.parse(fs.readFileSync(SFDX_PROJECT_JSON_FILENAME));
+		sfdxProjectJSON = JSON.parse(fs.readFileSync(path.join(GIT_REPO_FOLDER, SFDX_PROJECT_JSON_FILENAME)));
 		packageAliases = sfdxProjectJSON.packageAliases;
 		reversePackageAliases = {};
 
