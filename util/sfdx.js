@@ -9,6 +9,24 @@ import { AUTH_JWT_GRANT_COMMAND, CLI_SERVICE_AGREEMENT, LIMITS_API_DISPLAY_COMMA
 
 const exec = promisify(child_process.exec);
 
+async function install() {
+    let stderr;
+    let stdout;
+    try {
+        ({ stderr } = await exec(`npm install @salesforce/cli`));
+        if(stderr) fatal('install()', stderr);
+        ({stdout, stderr} = await exec(`npx sf`));
+        if(stderr) {
+            fatal('authorize()', stderr);
+        }
+        process.stdout.write(`sf command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error installing SFDX CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error installing SFDX CLI stdout: ${stdout}\n`);
+        fatal('install()', err);
+    }
+}
+
 async function authorize() {
     const certSecrets = await getSecret('warehouse/certificate');
     const HUB_CONSUMER_KEY = (await getSecret('warehouse/hubConsumerKey')).HUB_CONSUMER_KEY;
@@ -72,5 +90,6 @@ async function getRemainingPackageNumber() {
 
 export {
     authorize,
-    getRemainingPackageNumber
+    getRemainingPackageNumber,
+    install
 };
