@@ -13,16 +13,22 @@ async function install() {
     let stderr;
     let stdout;
     try {
-        ({ stderr } = await exec(`npm install @salesforce/cli`));
-        if(stderr) fatal('install()', stderr);
         ({stdout, stderr} = await exec(`npx sf`));
+        process.stdout.write(`sf command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running sf CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running sf CLI stdout: ${stdout}\n`);
+    }
+
+    try {
+        ({stdout, stderr} = await exec(`sf`));
         if(stderr) {
             fatal('authorize()', stderr);
         }
         process.stdout.write(`sf command stdout: ${stdout}\n`);
     } catch(err) {
-        process.stdout.write(`Error installing SFDX CLI stderr: ${stderr}\n`);
-        process.stdout.write(`Error installing SFDX CLI stdout: ${stdout}\n`);
+        process.stdout.write(`Error running sf CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running sf CLI stdout: ${stdout}\n`);
         fatal('install()', err);
     }
 }
