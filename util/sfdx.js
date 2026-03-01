@@ -32,7 +32,7 @@ async function authorize() {
 
     try{
         ({stdout, stderr} = await exec(
-            `sf`
+            `npx sf`
         ));
         if(stderr) {
             fatal('authorize()', stderr);
