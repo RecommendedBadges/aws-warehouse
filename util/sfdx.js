@@ -23,7 +23,7 @@ async function install() {
     }
 
     try {
-        ({stdout, stderr} = await exec(`sf`));
+        ({stdout, stderr} = await exec(`/tmp/cli/sf/bin/sf`));
         if(stderr) {
             fatal('authorize()', stderr);
         }
