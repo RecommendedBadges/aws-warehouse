@@ -18,7 +18,7 @@ async function authorize() {
     let stdout;
 
     try {
-        fs.writeFileSync('./server.key', Buffer.from(SERVER_KEY, 'base64').toString('utf8'));
+        fs.writeFileSync(path.join('/tmp', 'server.key'), Buffer.from(SERVER_KEY, 'base64').toString('utf8'));
     } catch(err) {
         fatal('authorize()', err);
     }
@@ -39,7 +39,7 @@ async function authorize() {
         }
         process.stdout.write(`sf command stdout: ${stdout}\n`);
         ({stdout, stderr} = await exec(
-            `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ./server.key -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`
+            `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`
         ));
         if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
             fatal('authorize()', stderr);
@@ -47,9 +47,9 @@ async function authorize() {
     } catch(err) {
         process.stdout.write(`Error authorizing with SFDX CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error authorizing with SFDX CLI stdout: ${stdout}\n`);
-        ({ stdout, stderr} = await exec(`sf doctor -c ${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ./server.key -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`))
+        /*({ stdout, stderr} = await exec(`sf doctor -c ${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ./server.key -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`))
         process.stdout.write(`Error authorizing with SFDX CLI cat sf doctor: ${stderr}\n`);
-        process.stdout.write(`Error authorizing with SFDX CLI cat sf doctor: ${stdout}\n`);
+        process.stdout.write(`Error authorizing with SFDX CLI cat sf doctor: ${stdout}\n`);*/
 
         fatal('authorize()', err);
     }

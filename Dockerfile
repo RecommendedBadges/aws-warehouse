@@ -13,7 +13,6 @@ RUN dnf install -y git
 RUN dnf install -y openssl
 ENV LD_LIBRARY_PATH=""
 RUN openssl version
-RUN npm install -g @salesforce/cli
 WORKDIR ${LAMBDA_TASK_ROOT}
 COPY --from=builder /usr/app/dist/* ./
 CMD ["index.handler"]

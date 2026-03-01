@@ -5,11 +5,13 @@ const GIT_CLONE_COMMAND = 'git clone';
 const GIT_COMMIT_COMMAND = 'git commit -a';
 const GIT_PULL_COMMAND = 'git pull -q';
 const GIT_PUSH_COMMAND = 'git push';
+const GIT_REPO_FOLDER = path.join('/tmp', process.env.REPOSITORY_NAME);
 
 export {
     GIT_CHECKOUT_COMMAND,
     GIT_CLONE_COMMAND,
     GIT_COMMIT_COMMAND,
     GIT_PULL_COMMAND,
-    GIT_PUSH_COMMAND
+    GIT_PUSH_COMMAND,
+    GIT_REPO_FOLDER
 }
