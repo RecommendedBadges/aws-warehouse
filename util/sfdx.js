@@ -13,6 +13,20 @@ async function install() {
     let stderr;
     let stdout;
 
+
+    try {
+        ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz`));
+        process.stdout.write(`wget command stdout: ${stdout}\n`);
+
+        ({stdout, stderr} = await exec(`mkdir -p /tmp/cli/sf`));
+        process.stdout.write(`mkdir command stdout: ${stdout}\n`);
+
+        ({stdout, stderr} = await exec(`tar -xf sf-linux-x64.tar.gz -C /tmp/cli/sf --strip-components 1`));
+        process.stdout.write(`tar command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running install CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running install CLI stdout: ${stdout}\n`);
+    }
     
     try {
         ({stdout, stderr} = await exec(`export PATH=/tmp/cli/sf/bin:$PATH`));
