@@ -14,29 +14,60 @@ async function install() {
     let stdout;
 
 
-    try {
+   /* try {
         ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz`));
         ({stdout, stderr} = await exec(`mkdir -p /tmp/cli/sf`));
         ({stdout, stderr} = await exec(`tar -xf sf-linux-x64.tar.gz -C /tmp/cli/sf --strip-components 1`));
     } catch(err) {
         process.stdout.write(`Error running install CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error running install CLI stdout: ${stdout}\n`);
-    }
+    } */
     
-    try {
+    /*try {
         ({stdout, stderr} = await exec(`export PATH=/tmp/cli/sf/bin:$PATH`));
         process.stdout.write(`export command stdout: ${stdout}\n`);
     } catch(err) {
         process.stdout.write(`Error running export CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error running export CLI stdout: ${stdout}\n`);
-    }
+    }*/
 
-    try {
+    // manually create zshrc file?'
+
+    /*try {
         ({stdout, stderr} = await exec(`export HOME=/tmp/`));
         process.stdout.write(`export command stdout: ${stdout}\n`);
     } catch(err) {
         process.stdout.write(`Error running export CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error running export CLI stdout: ${stdout}\n`);
+    }*/
+
+        try {
+        ({stdout, stderr} = await exec(`ls /var`));
+        process.stdout.write(`ls /var command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running ls /var CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running ls /var CLI stdout: ${stdout}\n`);
+    }
+        try {
+        ({stdout, stderr} = await exec(`ls /var/lang`));
+        process.stdout.write(`ls /var/lang command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running ls /var/lang CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running ls /var/lang CLI stdout: ${stdout}\n`);
+    }
+        try {
+        ({stdout, stderr} = await exec(`ls /var/lang/lib/`));
+        process.stdout.write(`ls /var/lang/lib/ command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running ls /var/lang/lib/ CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running ls /var/lang/lib/ CLI stdout: ${stdout}\n`);
+    }
+        try {
+        ({stdout, stderr} = await exec(`ls /var/lang/lib/node_modules/`));
+        process.stdout.write(`ls /var/lang/lib/node_modules/ command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running ls /var/lang/lib/node_modules/ CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running ls /var/lang/lib/node_modules/ CLI stdout: ${stdout}\n`);
     }
     
 
@@ -47,7 +78,7 @@ async function install() {
         process.stdout.write(`Error running sf command stderr: ${stderr}\n`);
         process.stdout.write(`Error running sf command stdout: ${stdout}\n`);
         process.stdout.write(`Error running sf command error: ${err}\n`);
-                fatal('install()', err);
+        fatal('install()', err);
 
     }
 
