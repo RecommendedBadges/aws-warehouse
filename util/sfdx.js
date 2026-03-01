@@ -16,13 +16,8 @@ async function install() {
 
     try {
         ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz`));
-        process.stdout.write(`wget command stdout: ${stdout}\n`);
-
         ({stdout, stderr} = await exec(`mkdir -p /tmp/cli/sf`));
-        process.stdout.write(`mkdir command stdout: ${stdout}\n`);
-
         ({stdout, stderr} = await exec(`tar -xf sf-linux-x64.tar.gz -C /tmp/cli/sf --strip-components 1`));
-        process.stdout.write(`tar command stdout: ${stdout}\n`);
     } catch(err) {
         process.stdout.write(`Error running install CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error running install CLI stdout: ${stdout}\n`);
@@ -36,34 +31,22 @@ async function install() {
         process.stdout.write(`Error running export CLI stdout: ${stdout}\n`);
     }
 
-
+    try {
+        ({stdout, stderr} = await exec(`export HOME=/tmp/`));
+        process.stdout.write(`export command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running export CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running export CLI stdout: ${stdout}\n`);
+    }
     
-    try {
-        ({stdout, stderr} = await exec(`ls /tmp/`));
-        process.stdout.write(`ls /tmp/ command stdout: ${stdout}\n`);
-    } catch(err) {
-        process.stdout.write(`Error running ls /tmp/ command stderr: ${stderr}\n`);
-        process.stdout.write(`Error running ls /tmp/ command stdout: ${stdout}\n`);
-    }
-
 
     try {
-        ({stdout, stderr} = await exec(`ls /tmp/cli/`));
-        process.stdout.write(`ls /tmp/cli/ command stdout: ${stdout}\n`);
+        ({stdout, stderr} = await exec(`sf`));
+        process.stdout.write(`sf command stdout: ${stdout}\n`);
     } catch(err) {
-        process.stdout.write(`Error running ls /tmp/cli/ command stderr: ${stderr}\n`);
-        process.stdout.write(`Error running ls /tmp/cli/ command stdout: ${stdout}\n`);
+        process.stdout.write(`Error running sf command stderr: ${stderr}\n`);
+        process.stdout.write(`Error running sf command stdout: ${stdout}\n`);
     }
-
-
-    try {
-        ({stdout, stderr} = await exec(`ls /tmp/cli/sf/`));
-        process.stdout.write(`ls /tmp/cli/sf/ command stdout: ${stdout}\n`);
-    } catch(err) {
-        process.stdout.write(`Error running ls /tmp/cli/sf/ command stderr: ${stderr}\n`);
-        process.stdout.write(`Error running ls /tmp/cli/sf/ command stdout: ${stdout}\n`);
-    }
-
 
     try {
         ({stdout, stderr} = await exec(`ls /tmp/cli/sf/bin/`));
