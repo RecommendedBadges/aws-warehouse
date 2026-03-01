@@ -12,39 +12,14 @@ const exec = promisify(child_process.exec);
 async function install() {
     let stderr;
     let stdout;
+
+    
     try {
-        ({stdout, stderr} = await exec(`npx sf`));
-        process.stdout.write(`sf command stdout: ${stdout}\n`);
+        ({stdout, stderr} = await exec(`export PATH=/tmp/cli/sf/bin:$PATH`));
+        process.stdout.write(`export command stdout: ${stdout}\n`);
     } catch(err) {
-        process.stdout.write(`Error running sf CLI stderr: ${stderr}\n`);
-        process.stdout.write(`Error running sf CLI stdout: ${stdout}\n`);
-    }
-
-
-    try {
-        ({stdout, stderr} = await exec(`npx -v`));
-        process.stdout.write(`npx version stdout: ${stdout}\n`);
-    } catch(err) {
-        process.stdout.write(`Error getting npx version stderr: ${stderr}\n`);
-        process.stdout.write(`Error getting npx version stdout: ${stdout}\n`);
-    }
-
-
-    try {
-        ({stdout, stderr} = await exec(`node -v`));
-        process.stdout.write(`node version stdout: ${stdout}\n`);
-    } catch(err) {
-        process.stdout.write(`Error getting node version stderr: ${stderr}\n`);
-        process.stdout.write(`Error getting node version stdout: ${stdout}\n`);
-    }
-
-
-    try {
-        ({stdout, stderr} = await exec(`npm -v`));
-        process.stdout.write(`npm version stdout: ${stdout}\n`);
-    } catch(err) {
-        process.stdout.write(`Error getting npm version stderr: ${stderr}\n`);
-        process.stdout.write(`Error getting npm version stdout: ${stdout}\n`);
+        process.stdout.write(`Error running export CLI stderr: ${stderr}\n`);
+        process.stdout.write(`Error running export CLI stdout: ${stdout}\n`);
     }
 
     try {
