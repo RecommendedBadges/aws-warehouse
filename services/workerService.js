@@ -34,6 +34,7 @@ let sfdxProjectJSON = {};
 
 async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedPackages = {} }, context) {
 	try {
+		process.stdout.write('Cloning repo\n');
 		await cloneRepo(pullRequestNumber);
 		process.stdout.write('Repo cloned\n');
 
@@ -61,6 +62,7 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 }
 
 async function cloneRepo(pullRequestNumber) {
+	process.stdout.write('getting open pull request details\n');
 	let pullRequest = await github.getOpenPullRequestDetails({ pullRequestNumber });
 	let stderr;
 
@@ -69,6 +71,7 @@ async function cloneRepo(pullRequestNumber) {
 		if (stderr) error.fatal('cloneRepo()', stderr);
 	}
 
+	process.stdout.write('creating folder\n');
 	try {
 		fs.mkdirSync(GIT_REPO_FOLDER);
 	} catch(err) {
@@ -80,6 +83,7 @@ async function cloneRepo(pullRequestNumber) {
 		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} ${GIT_REPO_FOLDER}`
 	));
 	if (stderr) error.fatal('cloneRepo()', stderr);
+	process.stdout.write('repo cloned\n');
 
 	try {
 		process.chdir(GIT_REPO_FOLDER);
