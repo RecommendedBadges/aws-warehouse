@@ -37,9 +37,10 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 		await cloneRepo(pullRequestNumber);
 		process.stdout.write('Repo cloned\n');
 
+		await sfdx.install();
+		process.exit(1);
 		parseSFDXProjectJSON();
 		await sfdx.authorize();
-		process.exit(1);
 		let packageLimit = await sfdx.getRemainingPackageNumber();
 		process.stdout.write(`Remaining package version creation limit is ${packageLimit}\n`);
 		process.stdout.write(`List of packages to update is ${sortedPackagesToUpdate.join(', ')}\n`);
@@ -80,13 +81,11 @@ async function cloneRepo(pullRequestNumber) {
 	));
 	if (stderr) error.fatal('cloneRepo()', stderr);
 
-	/*
 	try {
 		process.chdir(GIT_REPO_FOLDER);
 	} catch (err) {
 		error.fatal('cloneRepo()', err);
 	}
-	*/
 }
 
 function parseSFDXProjectJSON() {
