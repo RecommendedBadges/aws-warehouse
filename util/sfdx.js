@@ -22,6 +22,43 @@ async function install() {
         process.stdout.write(`Error running export CLI stdout: ${stdout}\n`);
     }
 
+
+    
+    try {
+        ({stdout, stderr} = await exec(`ls /tmp/`));
+        process.stdout.write(`ls /tmp/ command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running ls /tmp/ command stderr: ${stderr}\n`);
+        process.stdout.write(`Error running ls /tmp/ command stdout: ${stdout}\n`);
+    }
+
+
+    try {
+        ({stdout, stderr} = await exec(`ls /tmp/cli/`));
+        process.stdout.write(`ls /tmp/cli/ command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running ls /tmp/cli/ command stderr: ${stderr}\n`);
+        process.stdout.write(`Error running ls /tmp/cli/ command stdout: ${stdout}\n`);
+    }
+
+
+    try {
+        ({stdout, stderr} = await exec(`ls /tmp/cli/sf/`));
+        process.stdout.write(`ls /tmp/cli/sf/ command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running ls /tmp/cli/sf/ command stderr: ${stderr}\n`);
+        process.stdout.write(`Error running ls /tmp/cli/sf/ command stdout: ${stdout}\n`);
+    }
+
+
+    try {
+        ({stdout, stderr} = await exec(`ls /tmp/cli/sf/bin/`));
+        process.stdout.write(`ls /tmp/cli/sf/bin/ command stdout: ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write(`Error running ls /tmp/cli/sf/bin/ command stderr: ${stderr}\n`);
+        process.stdout.write(`Error running ls /tmp/cli/sf/bin/ command stdout: ${stdout}\n`);
+    }
+
     try {
         ({stdout, stderr} = await exec(`/tmp/cli/sf/bin/sf`));
         if(stderr) {
