@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 const COMMIT_MESSAGE = 'Updating package.json';
 
 const GIT_CHECKOUT_COMMAND = 'git checkout -f -q';
