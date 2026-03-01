@@ -46,17 +46,12 @@ async function install() {
     } catch(err) {
         process.stdout.write(`Error running sf command stderr: ${stderr}\n`);
         process.stdout.write(`Error running sf command stdout: ${stdout}\n`);
+        process.stdout.write(`Error running sf command error: ${err}\n`);
+                fatal('install()', err);
+
     }
 
-    try {
-        ({stdout, stderr} = await exec(`ls /tmp/cli/sf/bin/`));
-        process.stdout.write(`ls /tmp/cli/sf/bin/ command stdout: ${stdout}\n`);
-    } catch(err) {
-        process.stdout.write(`Error running ls /tmp/cli/sf/bin/ command stderr: ${stderr}\n`);
-        process.stdout.write(`Error running ls /tmp/cli/sf/bin/ command stdout: ${stdout}\n`);
-    }
-
-    try {
+    /*try {
         ({stdout, stderr} = await exec(`/tmp/cli/sf/bin/sf`));
         if(stderr) {
             fatal('authorize()', stderr);
@@ -66,7 +61,7 @@ async function install() {
         process.stdout.write(`Error running sf CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error running sf CLI stdout: ${stdout}\n`);
         fatal('install()', err);
-    }
+    }*/
 }
 
 async function authorize() {
