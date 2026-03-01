@@ -8,13 +8,13 @@ const PACKAGE_VERSION_ID_PREFIX = '04t';
 const PACKAGE_VERSION_INCREMENT = 1;
 const SFDX_PROJECT_JSON_FILENAME = './sfdx-project.json';
 
-const AUTH_JWT_GRANT_COMMAND = ' sf org login jwt';
-const LIMITS_API_DISPLAY_COMMAND = ' sf limits api display';
-const PACKAGE_INSTALL_COMMAND = ' sf package install';
-const PACKAGE_VERSION_CREATE_COMMAND = ' sf package version create';
-const PACKAGE_VERSION_CREATE_REPORT_COMMAND = ' sf package version create report';
-const PACKAGE_VERSION_PROMOTE_COMMAND = ' sf package version promote';
-const SOQL_QUERY_COMMAND = ' sf data query';
+const AUTH_JWT_GRANT_COMMAND = 'sf org login jwt';
+const LIMITS_API_DISPLAY_COMMAND = 'sf limits api display';
+const PACKAGE_INSTALL_COMMAND = 'sf package install';
+const PACKAGE_VERSION_CREATE_COMMAND = 'sf package version create';
+const PACKAGE_VERSION_CREATE_REPORT_COMMAND = 'sf package version create report';
+const PACKAGE_VERSION_PROMOTE_COMMAND = 'sf package version promote';
+const SOQL_QUERY_COMMAND = 'sf data query';
 
 export {
     AUTH_JWT_GRANT_COMMAND,
