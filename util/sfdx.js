@@ -26,13 +26,13 @@ async function install() {
 
     // manually create zshrc file?'
 
-    try {
+    /*try {
         ({stdout, stderr} = await exec(`export HOME=/tmp/`));
         process.stdout.write(`export command stdout: ${stdout}\n`);
     } catch(err) {
         process.stdout.write(`Error running export CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error running export CLI stdout: ${stdout}\n`);
-    }
+    }*/
 
         /*try {
         ({stdout, stderr} = await exec(`ls /var`));

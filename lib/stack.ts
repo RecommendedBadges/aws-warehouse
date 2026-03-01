@@ -19,6 +19,7 @@ export class DurableFunctionStack extends cdk.Stack {
 				REPOSITORY_NAME: 'RecommendedBadges',
 				REPOSITORY_URL: 'github.com/RecommendedBadges/RecommendedBadges',
 				HUB_ALIAS: 'HubOrg',
+				HOME: '/tmp',
 				PACKAGE_CREATE_REPORT_WAIT_TIME: '5',
 				PACKAGE_INSTALL_WAIT_TIME: '30',
 				PACKAGE_LIMIT_WAIT_TIME: '6'
