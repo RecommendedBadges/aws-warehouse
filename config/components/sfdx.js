@@ -11,7 +11,7 @@ const PACKAGE_VERSION_INCREMENT = 1;
 const SFDX_PROJECT_JSON_FILENAME = './sfdx-project.json';
 const SF_HOME = {HOME: '/tmp/'};
 
-const AUTH_JWT_GRANT_COMMAND = `${SF_BIN_PATH} org login jwt`;
+const AUTH_JWT_GRANT_COMMAND = `sf org login jwt`;
 const LIMITS_API_DISPLAY_COMMAND = `${SF_BIN_PATH} limits api display`;
 const PACKAGE_INSTALL_COMMAND = `${SF_BIN_PATH} package install`;
 const PACKAGE_VERSION_CREATE_COMMAND = `${SF_BIN_PATH} package version create`;
