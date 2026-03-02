@@ -48,10 +48,18 @@ async function authorize() {
     }*/
 
     try{
+        process.stdout.write('about run SF\n');
+        ({stdout, stderr} = await exec(
+            `sf`,
+            {env: {...process.env, ...SF_HOME}}
+        ));``
+        process.stdout.write('after SF execution\n');
+        process.stdout.write('SF stdout: ' + stdout + '\n');
+        process.stdout.write('SF stderr: ' + stderr + '\n');
 
         process.stdout.write('about to doctor authorize with SFDX CLI\n');
         ({stdout, stderr} = await exec(
-            `sf doctor -c "${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}"`,
+            `sf doctor -c "${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS} --json"`,
             {env: {...process.env, ...SF_HOME}}
         ));
         process.stdout.write('after doctor auth command execution\n');
