@@ -22,7 +22,8 @@ export class DurableFunctionStack extends cdk.Stack {
 				PACKAGE_CREATE_REPORT_WAIT_TIME: '5',
 				PACKAGE_INSTALL_WAIT_TIME: '30',
 				PACKAGE_LIMIT_WAIT_TIME: '6'
-			}
+			},
+			timeout: cdk.Duration.minutes(15),
 		});
 
 		const version = durableFunction.currentVersion;
