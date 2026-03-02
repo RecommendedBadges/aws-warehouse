@@ -65,7 +65,7 @@ async function install() {
     
 
     try {
-        ({stdout, stderr} = await exec(`/tmp/cli/sf/bin/sf`));
+        ({stdout, stderr} = await exec(`/tmp/cli/sf/bin/sf`, {env: {...process.env, HOME: '/tmp/'}}));
         process.stdout.write(`/tmp/cli/sf/bin/sf command stdout: ${stdout}\n`);
     } catch(err) {
         process.stdout.write(`Error running /tmp/cli/sf/bin/sf command stderr: ${stderr}\n`);
