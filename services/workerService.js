@@ -39,7 +39,9 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 		process.stdout.write('Repo cloned\n');
 
 		await sfdx.install();
+		process.stdout.write('Installed SF cli\n');
 		parseSFDXProjectJSON();
+		process.stdout.write('Parsed sfdx-project.json\n');
 		await sfdx.authorize();
 		process.exit(1);
 		let packageLimit = await sfdx.getRemainingPackageNumber();

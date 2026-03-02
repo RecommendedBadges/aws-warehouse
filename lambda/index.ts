@@ -6,7 +6,6 @@ export const handler = withDurableExecution(async (event, context: DurableContex
 	const sortedPackagesToUpdate = event.sortedPackagesToUpdate;
 
 	try {
-		process.stdout.write('Starting durable function execution\n'); // remove later
 		await orchestrate({ pullRequestNumber, sortedPackagesToUpdate }, context);
 		return { statusCode: 200, body: 'ok' };
 	} catch (err) {
