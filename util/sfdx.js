@@ -30,7 +30,8 @@ async function authorize() {
     const HUB_USERNAME = (await getSecret('warehouse/hubUsername')).HUB_USERNAME;
     let stderr;
     let stdout;
-    process.stdout.write('retrieved secrests\n');
+    process.stdout.write('retrieved secrets\n');
+    process.stdout.write(`hub consumer key is ${HUB_CONSUMER_KEY}\n`);
 
     try {
         fs.writeFileSync(path.join('/tmp', 'server.key'), Buffer.from(SERVER_KEY, 'base64').toString('utf8'));
