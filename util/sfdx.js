@@ -30,12 +30,14 @@ async function authorize() {
     const HUB_USERNAME = (await getSecret('warehouse/hubUsername')).HUB_USERNAME;
     let stderr;
     let stdout;
+    process.stdout.write('retrieved secrests\n');
 
     try {
         fs.writeFileSync(path.join('/tmp', 'server.key'), Buffer.from(SERVER_KEY, 'base64').toString('utf8'));
     } catch(err) {
         fatal('authorize()', err);
     }
+    process.stdout.write('decoded server key\n');
 
     /*({stderr} = await exec(
         `openssl enc -nosalt -aes-256-cbc -d -in ${path.join('/var', 'task', 'assets', 'server.key.enc')} -out ${path.join('/var', 'task', 'assets', 'server.key')} -base64 -K ${certSecrets.DECRYPTION_KEY} -iv ${certSecrets.DECRYPTION_IV}`
@@ -52,6 +54,7 @@ async function authorize() {
         if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
             fatal('authorize()', stderr);
         }
+        process.stdout.write('authorized with SFDX CLI (in try block)\n');
     } catch(err) {
         process.stdout.write(`Error authorizing with SFDX CLI stderr: ${stderr}\n`);
         process.stdout.write(`Error authorizing with SFDX CLI stdout: ${stdout}\n`);
@@ -61,6 +64,7 @@ async function authorize() {
 
         fatal('authorize()', err);
     }
+    process.stdout.write('authorized with SFDX CLI\n');
 }
 
 async function getRemainingPackageNumber() {
