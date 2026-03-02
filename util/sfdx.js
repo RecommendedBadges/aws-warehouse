@@ -61,6 +61,11 @@ async function authorize() {
         ({stdout, stderr} = await exec('ls'));
         process.stdout.write('ls stdout: ' + stdout + '\n');
         process.stdout.write('ls stderr: ' + stderr + '\n');
+        let lsOutput = stdout.split('\n');
+        let outputFileName = lsOutput.find(fileName => fileName.includes('-diagnosis.json'));
+        process.stdout.write('output file name is ' + outputFileName + '\n');
+        let doctorOutput = JSON.parse(fs.readFileSync(path.join('/tmp', outputFileName)));
+        process.stdout.write('doctor output is ' + JSON.stringify(doctorOutput) + '\n');
 
         process.stdout.write('about to authorize with SFDX CLI\n');
         ({stdout, stderr} = await exec(
