@@ -7,9 +7,7 @@ export const handler = withDurableExecution(async (event, context: DurableContex
 
 	try {
 		process.stdout.write('Starting durable function execution\n'); // remove later
-		orchestrate({ pullRequestNumber, sortedPackagesToUpdate }, context)
-		.then(() => process.stdout.write('Durable function execution completed\n')) // remove later
-		.catch(err => process.stdout.write(`Durable function execution error: ${err}\n`)); // remove later
+		await orchestrate({ pullRequestNumber, sortedPackagesToUpdate }, context);
 		return { statusCode: 200, body: 'ok' };
 	} catch (err) {
 		console.error('Lambda handler error', err);
