@@ -1,3 +1,5 @@
+const SF_BIN_PATH = '/tmp/cli/sf/bin/sf';
+
 const CLI_SERVICE_AGREEMENT = 'You acknowledge and agree that the CLI tool may collect usage information, user environment, and crash reports for the purposes of providing services or functions that are relevant to use of the CLI tool and product improvements.';
 const FORCE_IGNORE_FILENAME = '.forceignore'
 const PACKAGE_ALIAS_DELIMITER = '@';
@@ -7,14 +9,15 @@ const PACKAGE_LIMIT_NAME = 'Package2VersionCreates';
 const PACKAGE_VERSION_ID_PREFIX = '04t';
 const PACKAGE_VERSION_INCREMENT = 1;
 const SFDX_PROJECT_JSON_FILENAME = './sfdx-project.json';
+const SF_HOME = {HOME: '/tmp/'};
 
-const AUTH_JWT_GRANT_COMMAND = 'npx sf org login jwt';
-const LIMITS_API_DISPLAY_COMMAND = 'npx sf limits api display';
-const PACKAGE_INSTALL_COMMAND = 'npx sf package install';
-const PACKAGE_VERSION_CREATE_COMMAND = 'npx sf package version create';
-const PACKAGE_VERSION_CREATE_REPORT_COMMAND = 'npx sf package version create report';
-const PACKAGE_VERSION_PROMOTE_COMMAND = 'npx sf package version promote';
-const SOQL_QUERY_COMMAND = 'npx sf data query';
+const AUTH_JWT_GRANT_COMMAND = `${SF_BIN_PATH} org login jwt`;
+const LIMITS_API_DISPLAY_COMMAND = `${SF_BIN_PATH} limits api display`;
+const PACKAGE_INSTALL_COMMAND = `${SF_BIN_PATH} package install`;
+const PACKAGE_VERSION_CREATE_COMMAND = `${SF_BIN_PATH} package version create`;
+const PACKAGE_VERSION_CREATE_REPORT_COMMAND = `${SF_BIN_PATH} package version create report`;
+const PACKAGE_VERSION_PROMOTE_COMMAND = `${SF_BIN_PATH} package version promote`;
+const SOQL_QUERY_COMMAND = `${SF_BIN_PATH} data query`;
 
 export {
     AUTH_JWT_GRANT_COMMAND,
@@ -32,5 +35,6 @@ export {
     PACKAGE_VERSION_INCREMENT,
     PACKAGE_VERSION_PROMOTE_COMMAND,
     SFDX_PROJECT_JSON_FILENAME,
-    SOQL_QUERY_COMMAND
+    SOQL_QUERY_COMMAND,
+    SF_HOME
 };
