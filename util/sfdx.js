@@ -48,7 +48,7 @@ async function authorize() {
     }*/
 
     try{
-        process.stdout.write('about run SF\n');
+        /*process.stdout.write('about run SF\n');
         ({stdout, stderr} = await exec(
             `sf`,
             {env: {...process.env, ...SF_HOME}}
@@ -56,7 +56,8 @@ async function authorize() {
         process.stdout.write('after SF execution\n');
         process.stdout.write('SF stdout: ' + stdout + '\n');
         process.stdout.write('SF stderr: ' + stderr + '\n');
-
+*/
+/*
         process.stdout.write('about to doctor authorize with SFDX CLI\n');
         ({stdout, stderr} = await exec(
             `sf doctor -c "${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS} --json"`,
@@ -74,7 +75,7 @@ async function authorize() {
         process.stdout.write('output file name is ' + outputFileName + '\n');
         let doctorOutput = JSON.parse(fs.readFileSync(path.join('/tmp', outputFileName)));
         process.stdout.write('doctor output is ' + JSON.stringify(doctorOutput) + '\n');
-
+*/
         process.stdout.write('about to authorize with SFDX CLI\n');
         ({stdout, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
