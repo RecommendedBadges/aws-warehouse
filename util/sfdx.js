@@ -35,8 +35,10 @@ async function authorize() {
     } catch(err) {
         fatal('authorize()', err);
     }
+    process.stdout.write('decoded server key\n');
 
     try{
+        process.stdout.write('about to authorize with sf cli\n');
         ({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
             {env: {...process.env, ...SF_HOME}}
