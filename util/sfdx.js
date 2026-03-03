@@ -35,8 +35,8 @@ async function authorize() {
     } catch(err) {
         fatal('authorize()', err);
     }
-    process.stdout.write('decoded server key\n');
-
+    process.stdout.write(`decoded server key ${fs.readFileSync(path.join('/tmp', 'server.key'), 'utf8')}\n`);
+    
     try{
         process.stdout.write('about to authorize with sf cli\n');
         ({_, stderr} = await exec(
