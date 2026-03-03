@@ -26,9 +26,9 @@ async function install() {
 async function authorize() {
     const AUTH_SECRETS = await getSecret('warehouse/authSecrets');
     process.stdout.write(`Auth secrets ${JSON.stringify(AUTH_SECRETS)}\n`);
-    process.stdout.write('Auth secrets SERVER_KEY ${AUTH_SECRETS.SERVER_KEY}\n');
-    process.stdout.write('Auth secrets HUB_CONSUMER_KEY ${AUTH_SECRETS.HUB_CONSUMER_KEY}\n');
-    process.stdout.write('Auth secrets HUB_USERNAME ${AUTH_SECRETS.HUB_USERNAME}\n');
+    process.stdout.write(`Auth secrets SERVER_KEY ${AUTH_SECRETS.SERVER_KEY}\n`);
+    process.stdout.write(`Auth secrets HUB_CONSUMER_KEY ${AUTH_SECRETS.HUB_CONSUMER_KEY}\n`);
+    process.stdout.write(`Auth secrets HUB_USERNAME ${AUTH_SECRETS.HUB_USERNAME}\n`);
     let stderr;
     try {
         fs.writeFileSync(path.join('/tmp', 'server.key'), Buffer.from(AUTH_SECRETS.SERVER_KEY, 'base64').toString('utf8'));
