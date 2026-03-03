@@ -35,10 +35,12 @@ async function authorize() {
     } catch(err) {
         fatal('authorize()', err);
     }
-    process.stdout.write(`decoded server key ${fs.readFileSync(path.join('/tmp', 'server.key'), 'utf8')}\n`);
-    
+    //process.stdout.write(`decoded server key ${fs.readFileSync(path.join('/tmp', 'server.key'), 'utf8')}\n`);
+
     try{
         process.stdout.write('about to authorize with sf cli\n');
+        process.stdout.write(`PATH is ${process.env.PATH}\n`);
+        process.stdout.write(`Running command: ${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}\n`);
         ({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
             {env: {...process.env, ...SF_HOME}}
