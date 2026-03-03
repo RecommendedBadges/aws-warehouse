@@ -15,12 +15,6 @@ ENV LD_LIBRARY_PATH=""
 RUN openssl version
 RUN dnf install -y wget
 RUN dnf install -y tar
-#RUN wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz
-#RUN mkdir -p /tmp/cli/sf
-#RUN tar -xf sf-linux-x64.tar.gz -C /tmp/cli/sf --strip-components 1
-#RUN export PATH=/tmp/cli/sf/bin:$PATH
-#RUN npm install @salesforce/cli -g
-#RUN sf -v
 COPY package.json ./
 RUN npm install --omit=dev
 WORKDIR ${LAMBDA_TASK_ROOT}
