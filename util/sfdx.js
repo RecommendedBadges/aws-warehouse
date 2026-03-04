@@ -1,5 +1,6 @@
 import { promisify } from 'node:util';
 import child_process from 'node:child_process';
+import { once } from 'node:events';
 import path from 'node:path';
 import fs from 'node:fs';
 
@@ -17,7 +18,7 @@ async function install() {
         ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz`));
         ({stdout, stderr} = await exec(`mkdir -p /tmp/cli/sf`));
         ({stdout, stderr} = await exec(`tar -xf sf-linux-x64.tar.gz -C /tmp/cli/sf --strip-components 1`));
-        process.env.PATH = '/tmp/cli/sf/bin:' + process.env.PATH;
+        process.env.PATH = 'tmp/cli/sf/bin/:' + process.env.PATH;
     } catch(err) {
         fatal('install()', err);
     }
@@ -41,10 +42,30 @@ async function authorize() {
         process.stdout.write('about to authorize with sf cli\n');
         process.stdout.write(`PATH is ${process.env.PATH}\n`);
         process.stdout.write(`Running command: ${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}\n`);
-        ({_, stderr} = await exec(
+
+
+        const authCommand = child_process.spawn(
+            `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
+            {
+                env: {...process.env, ...SF_HOME},
+                shell: true
+            }
+        );
+
+        authCommand.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+        });
+
+        authCommand.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+        });
+
+        const [code] = await once(authCommand, 'close');
+        console.log(`child process exited with code ${code}`);
+        /*({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
             {env: {...process.env, ...SF_HOME}}
-        ));
+        ));*/
         if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
             fatal('authorize()', stderr);
         }
