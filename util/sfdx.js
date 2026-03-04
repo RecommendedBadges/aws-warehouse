@@ -18,7 +18,7 @@ async function install() {
         ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz`));
         ({stdout, stderr} = await exec(`mkdir -p /tmp/cli/sf`));
         ({stdout, stderr} = await exec(`tar -xf sf-linux-x64.tar.gz -C /tmp/cli/sf --strip-components 1`));
-        process.env.PATH = 'tmp/cli/sf/bin/:' + process.env.PATH;
+        process.env.PATH = '/tmp/cli/sf/bin/:' + process.env.PATH;
     } catch(err) {
         fatal('install()', err);
     }
@@ -63,10 +63,10 @@ async function authorize() {
 
         const [code] = await once(authCommand, 'close');
         process.stdout.write(`child process exited with code ${code}\n`);
-        /*({_, stderr} = await exec(
+        ({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
             {env: {...process.env, ...SF_HOME}}
-        ));*/
+        ));
         if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
             fatal('authorize()', stderr);
         }
