@@ -34,7 +34,7 @@ jobs:
                 docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
                 docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
             - name: Install AWS CDK
-              run: npm install -g aws-cdk
+              run: npm install -g aws-cdk@latest
             - name: Install Dependencies
               run: npm ci
             - name: Deploy to AWS
