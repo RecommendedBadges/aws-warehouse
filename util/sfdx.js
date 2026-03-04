@@ -53,15 +53,15 @@ async function authorize() {
         );
 
         authCommand.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
+        process.stdout.write(`stdout: ${data}`);
         });
 
         authCommand.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
+        process.stdout.write(`stderr: ${data}`);
         });
 
         const [code] = await once(authCommand, 'close');
-        console.log(`child process exited with code ${code}`);
+        process.stdout.write(`child process exited with code ${code}\n`);
         /*({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
             {env: {...process.env, ...SF_HOME}}
@@ -75,6 +75,7 @@ async function authorize() {
 }
 
 async function getRemainingPackageNumber() {
+    process.stdout.write(`PATH is ${process.env.PATH}\n`);
     const {stdout, stderr} = await exec(
         `${LIMITS_API_DISPLAY_COMMAND} -o ${process.env.HUB_ALIAS} --json`,
         {env: {...process.env, ...SF_HOME}}
