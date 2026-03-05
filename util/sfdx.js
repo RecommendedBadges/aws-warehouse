@@ -45,7 +45,7 @@ async function authorize() {
 
         process.stdout.write(`env is ${JSON.stringify({...process.env, ...SF_HOME})}\n`);
 
-        const authCommand = child_process.spawn(
+        /*const authCommand = child_process.spawn(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
             {
                 env: {...process.env, ...SF_HOME},
@@ -62,7 +62,7 @@ async function authorize() {
         });
 
         const [code] = await once(authCommand, 'close');
-        process.stdout.write(`child process exited with code ${code}\n`);
+        process.stdout.write(`child process exited with code ${code}\n`);*/
         ({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
             {env: {...process.env, ...SF_HOME}}
