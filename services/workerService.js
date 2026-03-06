@@ -160,7 +160,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 
 				if(result.Status !== 'Success' && result.Status !== 'Error') {
 					try {
-						await childContext.waitForCondition(
+						result = await childContext.waitForCondition(
 							'checkPackageCreationStatus',
 							async (state, _) => {
 								process.stdout.write('in waitForCondition\n');
