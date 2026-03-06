@@ -144,7 +144,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				process.stdout.write(`Creating package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
 				try {
 				({ stdout, stderr } = await exec(
-					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -c -v ${process.env.HUB_ALIAS} --skip-validation --json`, // remove skip-validation later
+					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -v ${process.env.HUB_ALIAS} --skip-validation --json`, // remove skip-validation later, -c
 					{env: {...process.env, ...SF_HOME}}
 				));
 
