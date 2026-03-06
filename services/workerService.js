@@ -182,12 +182,12 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				process.stdout.write(`results ${JSON.stringify(result)}\n`);
 				//process.exit(1);
 				({ stdout, stderr } = await exec(
-					`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${JSON.parse(result).Id} -v ${process.env.HUB_ALIAS} --json`,
+					`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${JSON.parse(JSON.stringify(result)).Id} -v ${process.env.HUB_ALIAS} --json`,
 					{env: {...process.env, ...SF_HOME}}
 				));
 				if(stderr) error.fatal('updatePackages()', stderr);
-				let subscriberPackageVersionId = JSON.parse(result).SubscriberPackageVersionId;
 				process.stdout.write(`Releasing package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
+				let subscriberPackageVersionId = result.SubscriberPackageVersionId;
 
 				({ stdout, stderr } = await exec(
 					`${PACKAGE_VERSION_PROMOTE_COMMAND} -p ${subscriberPackageVersionId} -n --json`,
