@@ -142,11 +142,16 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion + PACKAGE_VERSION_INCREMENT}` :
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion}`;
 				process.stdout.write(`Creating package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
-				
+				try {
 				({ stdout, stderr } = await exec(
 					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -c -v ${process.env.HUB_ALIAS} --skip-validation --json`, // remove skip-validation later
 					{env: {...process.env, ...SF_HOME}}
 				));
+
+				} catch(err) {
+					process.stderr.write(`stderr ${stderr}\n`);
+					error.fatal('updatePackages()', err);
+				}
 				if(stderr) error.fatal('updatePackages()', stderr);
 				const result = JSON.parse(stdout).result;
 				if(result.Status !== 'Success' && result.Status !== 'Error') {
