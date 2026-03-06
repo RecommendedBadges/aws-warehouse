@@ -159,30 +159,37 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 								process.stdout.write(`Package version creation result status: ${JSON.stringify(result.Status)}\n`);
 
 				if(result.Status !== 'Success' && result.Status !== 'Error') {
-					await childContext.waitForCondition(
-						'checkPackageCreationStatus',
-						async (state, _) => {
-							process.stdout.write('in waitForCondition\n');
-							process.stdout.write(`waitForCondition state ${JSON.stringify(state)}\n`);
-							({ stdout, stderr } = await exec(
-								`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
-								{env: {...process.env, ...SF_HOME}}
-							));
-							process.stdout.write(`package version create report stdout ${stdout}\n`);
-							return { ...state, status: JSON.parse(stdout).result[0].Status };
-						},
-						{
-							initialState: {
-								requestId: result.Id,
-								status: result.Status
+					try {
+						await childContext.waitForCondition(
+							'checkPackageCreationStatus',
+							async (state, _) => {
+								process.stdout.write('in waitForCondition\n');
+								process.stdout.write(`waitForCondition state ${JSON.stringify(state)}\n`);
+								({ stdout, stderr } = await exec(
+									`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
+									{env: {...process.env, ...SF_HOME}}
+								));
+								process.stdout.write(`package version create report stdout ${stdout}\n`);
+								return { ...state, status: JSON.parse(stdout).result[0].Status };
 							},
-							waitStrategy: (state) => {
-								state.status === 'Success' || state.status === 'Error' ? { shouldContinue: false } : { 
-									shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME }
+							{
+								initialState: {
+									requestId: result.Id,
+									status: result.Status
+								},
+								waitStrategy: (state) => {
+									state.status === 'Success' || state.status === 'Error' ? { shouldContinue: false } : { 
+										shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME }
+									}
 								}
 							}
-						}
-					)
+						)
+					} catch(err) {
+						process.stderr.write(`error line number ${err.lineNumber}\n`);
+						process.stdout.write(`stdout ${stdout}\n`);
+						process.stderr.write(`stderr ${stderr}\n`);
+						error.fatal('updatePackages()', err);
+					}
 				}
 
 				process.stdout.write(`results after waitForCondition ${JSON.stringify(result)}\n`);
