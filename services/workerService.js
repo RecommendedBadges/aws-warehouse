@@ -180,13 +180,13 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				}
 
 				process.stdout.write(`results ${JSON.stringify(result)}\n`);
-				process.exit(1);
+				//process.exit(1);
 				({ stdout, stderr } = await exec(
 					`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${result.Id} -v ${process.env.HUB_ALIAS} --json`,
 					{env: {...process.env, ...SF_HOME}}
 				));
 				if(stderr) error.fatal('updatePackages()', stderr);
-				let subscriberPackageVersionId = JSON.parse(stdout).result[0].SubscriberPackageVersionId;
+				let subscriberPackageVersionId = JSON.parse(result).SubscriberPackageVersionId;
 				process.stdout.write(`Releasing package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
 
 				({ stdout, stderr } = await exec(
