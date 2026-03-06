@@ -47,7 +47,6 @@ async function authorize() {
 }
 
 async function getRemainingPackageNumber() {
-    process.stdout.write(`PATH is ${process.env.PATH}\n`);
     const {stdout, stderr} = await exec(
         `${LIMITS_API_DISPLAY_COMMAND} -o ${process.env.HUB_ALIAS} --json`,
         {env: {...process.env, ...SF_HOME}}
