@@ -149,6 +149,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				));
 
 				} catch(err) {
+					process.stdout.write(`stdout ${stdout}\n`);
 					process.stderr.write(`stderr ${stderr}\n`);
 					error.fatal('updatePackages()', err);
 				}
