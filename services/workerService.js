@@ -144,7 +144,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				process.stdout.write(`Creating package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
 				
 				({ stdout, stderr } = await exec(
-					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -c -v ${process.env.HUB_ALIAS} --json`,
+					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -c -v ${process.env.HUB_ALIAS} --skip-validation --json`, // remove skip-validation later
 					{env: {...process.env, ...SF_HOME}}
 				));
 				if(stderr) error.fatal('updatePackages()', stderr);
@@ -173,6 +173,8 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					)
 				}
 
+				process.stdout.write(`results ${JSON.stringify(result)}\n`);
+				process.exit(1);
 				({ stdout, stderr } = await exec(
 					`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${result.Id} -v ${process.env.HUB_ALIAS} --json`,
 					{env: {...process.env, ...SF_HOME}}
