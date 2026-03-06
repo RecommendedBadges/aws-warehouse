@@ -137,7 +137,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				let latestPackageVersion = JSON.parse(stdout).result.records[0];
 				let newPackageVersionNumber = latestPackageVersion.IsReleased ? 
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion + PACKAGE_VERSION_INCREMENT}.${latestPackageVersion.PatchVersion}.${PACKAGE_BUILD_NUMBER}` :
-					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion}.${latestPackageVersion.PatchVersion + 1}.${Number.parseInt(latestPackageVersion.BuildNumber) + 1}`;
+					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion}.${latestPackageVersion.PatchVersion}.${Number.parseInt(latestPackageVersion.BuildNumber) + 1}`;
 				let newPackageVersionName = latestPackageVersion.IsReleased ? 
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion + PACKAGE_VERSION_INCREMENT}` :
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion}`;
@@ -163,6 +163,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 								`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
 								{env: {...process.env, ...SF_HOME}}
 							));
+							process.stdout.write(`package version create report stdout ${stdout}\n`);
 							return { ...state, status: JSON.parse(stdout).result[0].Status};
 						},
 						{
