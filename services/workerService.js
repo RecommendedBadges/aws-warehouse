@@ -55,7 +55,7 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 		try {
 			await pushUpdatedPackageJSON(updatedPackages);
 		} catch (err) {
-			console.error(err);
+			process.stderr.write(err);
 		}
 	} catch (err) {
 		error.fatal('orchestrate()', err);
@@ -128,7 +128,10 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				);
 
 				query = `SELECT MajorVersion, MinorVersion, PatchVersion, IsReleased FROM Package2Version WHERE Package2.Name='${packageToUpdate}' ORDER BY MajorVersion DESC, MinorVersion DESC, PatchVersion DESC`;
-				({ stdout, stderr } = await exec(`${SOQL_QUERY_COMMAND} -q "${query}" -t -o ${process.env.HUB_ALIAS} --json`));
+				({ stdout, stderr } = await exec(
+					`${SOQL_QUERY_COMMAND} -q "${query}" -t -o ${process.env.HUB_ALIAS} --json`,
+				    {env: {...process.env, ...SF_HOME}}
+				));
 				if(stderr) error.fatal('updatePackages()', stderr);
 				let latestPackageVersion = JSON.parse(stdout).result.records[0];
 				let newPackageVersionNumber = latestPackageVersion.IsReleased ? 
@@ -140,7 +143,8 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				process.stdout.write(`Creating package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
 				
 				({ stdout, stderr } = await exec(
-					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -c -v ${process.env.HUB_ALIAS} --json`
+					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -c -v ${process.env.HUB_ALIAS} --json`,
+					{env: {...process.env, ...SF_HOME}}
 				));
 				if(stderr) error.fatal('updatePackages()', stderr);
 				const result = JSON.parse(stdout).result;
@@ -148,7 +152,10 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					childContext.waitForCondition(
 						'checkPackageCreationStatus',
 						async (state, _) => {
-							({ stdout, stderr } = await exec(`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`));
+							({ stdout, stderr } = await exec(
+								`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
+								{env: {...process.env, ...SF_HOME}}
+							));
 							return { ...state, status: JSON.parse(stdout).result[0].Status};
 						},
 						{
@@ -165,12 +172,18 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					)
 				}
 
-				({ stdout, stderr } = await exec(`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${result.Id} -v ${process.env.HUB_ALIAS} --json`));
+				({ stdout, stderr } = await exec(
+					`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${result.Id} -v ${process.env.HUB_ALIAS} --json`,
+					{env: {...process.env, ...SF_HOME}}
+				));
 				if(stderr) error.fatal('updatePackages()', stderr);
 				let subscriberPackageVersionId = JSON.parse(stdout).result[0].SubscriberPackageVersionId;
 				process.stdout.write(`Releasing package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
 
-				({ stdout, stderr } = await exec(`${PACKAGE_VERSION_PROMOTE_COMMAND} -p ${subscriberPackageVersionId} -n --json`));
+				({ stdout, stderr } = await exec(
+					`${PACKAGE_VERSION_PROMOTE_COMMAND} -p ${subscriberPackageVersionId} -n --json`,
+					{env: {...process.env, ...SF_HOME}}
+				));
 				if(stderr) error.fatal('updatePackages()', stderr);
 				updatedPackages[`${packageToUpdate}@${newPackageVersionNumber}`] = subscriberPackageVersionId;
 
@@ -180,37 +193,6 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 		}
 	);
 	return { updatedPackages };
-}
-
-async function installPackages(updatedPackages) {
-	for (let updatedPackageAlias in updatedPackages) {
-		process.stdout.write(`Installing package ${updatedPackageAlias}\n`);
-		let { stderr } = await exec(
-			`${PACKAGE_INSTALL_COMMAND} -p ${updatedPackages[updatedPackageAlias]} -o ${process.env.HUB_ALIAS} -w ${process.env.PACKAGE_INSTALL_WAIT_TIME} -r --json`
-		);
-		if (stderr) error.fatal('installPackages()', stderr);
-	}
-}
-
-async function pushUpdatedPackageJSON(updatedPackages) {
-	let stderr;
-	({ stderr } = await exec(`${GIT_CHECKOUT_COMMAND} main`));
-	if (stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
-
-	({ stderr } = await exec(`${GIT_PULL_COMMAND}`))
-
-	process.stdout.write('Updating sfdx-project.json and pushing to main');
-	for (let updatedPackageAlias in updatedPackages) {
-		sfdxProjectJSON.packageAliases[updatedPackageAlias] = updatePackages[updatedPackageAlias];
-	}
-	fs.writeFileSync(SFDX_PROJECT_JSON_FILENAME, JSON.stringify(sfdxProjectJSON, null, 2));
-
-	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
-	({ stderr } = await exec(`${GIT_COMMIT_COMMAND} -m "${COMMIT_MESSAGE}" --author="${gitConfigVars.GIT_COMMIT_NAME} ${gitConfigVars.GIT_COMMIT_EMAIL}"`));
-	if (stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
-
-	({ stderr } = await exec(GIT_PUSH_COMMAND));
-	if (stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
 }
 
 function updateForceIgnore() {
@@ -259,7 +241,8 @@ async function getPackageNameFromDependency(dependentPackage) {
 	} else if (dependentPackage.package.startsWith(PACKAGE_VERSION_ID_PREFIX)) {
 		let query = `SELECT Package2Id FROM Package2Version WHERE SubscriberPackageVersionId='${dependentPackage.package}'`
 		const { stderr, stdout } = await exec(
-			`${SOQL_QUERY_COMMAND} -q "${query}" -t -o ${process.env.HUB_ALIAS} --json`
+			`${SOQL_QUERY_COMMAND} -q "${query}" -t -o ${process.env.HUB_ALIAS} --json`,
+			{env: {...process.env, ...SF_HOME}}
 		);
 
 		if (stderr) error.fatal('getPackageNameFromDependency()', stderr);
@@ -272,6 +255,38 @@ async function getPackageNameFromDependency(dependentPackage) {
 	} else {
 		return dependentPackage.package.slice(0, endIndex);
 	}
+}
+
+async function installPackages(updatedPackages) {
+	for (let updatedPackageAlias in updatedPackages) {
+		process.stdout.write(`Installing package ${updatedPackageAlias}\n`);
+		let { stderr } = await exec(
+			`${PACKAGE_INSTALL_COMMAND} -p ${updatedPackages[updatedPackageAlias]} -o ${process.env.HUB_ALIAS} -w ${process.env.PACKAGE_INSTALL_WAIT_TIME} -r --json`,
+			{env: {...process.env, ...SF_HOME}}
+		);
+		if (stderr) error.fatal('installPackages()', stderr);
+	}
+}
+
+async function pushUpdatedPackageJSON(updatedPackages) {
+	let stderr;
+	({ stderr } = await exec(`${GIT_CHECKOUT_COMMAND} main`));
+	if (stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
+
+	({ stderr } = await exec(`${GIT_PULL_COMMAND}`))
+
+	process.stdout.write('Updating sfdx-project.json and pushing to main');
+	for (let updatedPackageAlias in updatedPackages) {
+		sfdxProjectJSON.packageAliases[updatedPackageAlias] = updatePackages[updatedPackageAlias];
+	}
+	fs.writeFileSync(SFDX_PROJECT_JSON_FILENAME, JSON.stringify(sfdxProjectJSON, null, 2));
+
+	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
+	({ stderr } = await exec(`${GIT_COMMIT_COMMAND} -m "${COMMIT_MESSAGE}" --author="${gitConfigVars.GIT_COMMIT_NAME} ${gitConfigVars.GIT_COMMIT_EMAIL}"`));
+	if (stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
+
+	({ stderr } = await exec(GIT_PUSH_COMMAND));
+	if (stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
 }
 
 export {
