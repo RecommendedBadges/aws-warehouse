@@ -122,9 +122,9 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					},
 					{
 						initialState: { packageLimit },
-						waitStrategy: (state) => {
-							state.packageLimit > 0 ? { shouldContinue : false } : { shouldContinue: true, delay: { hours: process.env.PACKAGE_LIMIT_WAIT_TIME }};
-						}
+						waitStrategy: (state) => state.packageLimit > 0 ? 
+							{ shouldContinue : false } : 
+							{ shouldContinue: true, delay: { hours: process.env.PACKAGE_LIMIT_WAIT_TIME }}
 					}
 				);
 
@@ -177,11 +177,9 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 									requestId: result.Id,
 									status: result.Status
 								},
-								waitStrategy: (state) => {
-									state.status === 'Success' || state.status === 'Error' ? { shouldContinue: false } : { 
-										shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME }
-									}
-								}
+								waitStrategy: (state) => state.status === 'Success' || state.status === 'Error' ? 
+									{ shouldContinue: false } : 
+									{ shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME } }
 							}
 						)
 					} catch(err) {
