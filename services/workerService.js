@@ -155,6 +155,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				}
 				if(stderr) error.fatal('updatePackages()', stderr);
 				const result = JSON.parse(stdout).result;
+				process.stdout.write(`Package version creation result: ${JSON.stringify(result)}\n`);
 				if(result.Status !== 'Success' && result.Status !== 'Error') {
 					childContext.waitForCondition(
 						'checkPackageCreationStatus',
@@ -180,7 +181,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					)
 				}
 
-				process.stdout.write(`results ${JSON.stringify(result)}\n`);
+				process.stdout.write(`results after waitForCondition ${JSON.stringify(result)}\n`);
 				//process.exit(1);
 				({ stdout, stderr } = await exec(
 					`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${JSON.parse(JSON.stringify(result)).Id} -v ${process.env.HUB_ALIAS} --json`,
