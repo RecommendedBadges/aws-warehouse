@@ -154,7 +154,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					error.fatal('updatePackages()', err);
 				}
 				if(stderr) error.fatal('updatePackages()', stderr);
-				const result = JSON.parse(stdout).result;
+				let result = JSON.parse(stdout).result;
 				process.stdout.write(`Package version creation result: ${JSON.stringify(result)}\n`);
 								process.stdout.write(`Package version creation result status: ${JSON.stringify(result.Status)}\n`);
 
