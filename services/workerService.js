@@ -169,8 +169,9 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 									`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
 									{env: {...process.env, ...SF_HOME}}
 								));
+								let packageCreateReportResult = JSON.parse(stdout).result[0];
 								process.stdout.write(`package version create report stdout ${stdout}\n`);
-								return { ...state, status: JSON.parse(stdout).result[0].Status };
+								return { ...state, status: packageCreateReportResult.Status, SubscriberPackageVersionId: packageCreateReportResult.SubscriberPackageVersionId};
 							},
 							{
 								initialState: {
