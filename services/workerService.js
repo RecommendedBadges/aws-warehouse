@@ -47,7 +47,6 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 		process.stdout.write(`Remaining package version creation limit is ${packageLimit}\n`);
 		process.stdout.write(`List of packages to update is ${sortedPackagesToUpdate.join(', ')}\n`);
 
-		process.exit(0);
 		updatedPackages = await updatePackages(packageLimit, sortedPackagesToUpdate, updatedPackages, context);
 
 		await installPackages(updatedPackages);
