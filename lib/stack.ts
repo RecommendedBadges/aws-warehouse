@@ -23,6 +23,7 @@ export class DurableFunctionStack extends cdk.Stack {
 				PACKAGE_INSTALL_WAIT_TIME: '30',
 				PACKAGE_LIMIT_WAIT_TIME: '6'
 			},
+			memorySize: 1024,
 			timeout: cdk.Duration.minutes(10),
 		});
 
