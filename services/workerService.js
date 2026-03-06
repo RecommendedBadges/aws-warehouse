@@ -128,7 +128,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					}
 				);
 
-				query = `SELECT MajorVersion, MinorVersion, PatchVersion, IsReleased FROM Package2Version WHERE Package2.Name='${packageToUpdate}' ORDER BY MajorVersion DESC, MinorVersion DESC, PatchVersion DESC`;
+				query = `SELECT MajorVersion, MinorVersion, PatchVersion, BuildNumber, IsReleased FROM Package2Version WHERE Package2.Name='${packageToUpdate}' ORDER BY MajorVersion DESC, MinorVersion DESC, PatchVersion DESC, BuildNumber DESC`;
 				({ stdout, stderr } = await exec(
 					`${SOQL_QUERY_COMMAND} -q "${query}" -t -o ${process.env.HUB_ALIAS} --json`,
 				    {env: {...process.env, ...SF_HOME}}
