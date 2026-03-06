@@ -115,7 +115,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				let stdout;
 				let stderr;
 
-				childContext.waitForCondition(
+				await childContext.waitForCondition(
 					async (state, _) => {
 						const packageLimit = await sfdx.getRemainingPackageNumber();
 						return { ...state, packageLimit };
@@ -159,7 +159,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 								process.stdout.write(`Package version creation result status: ${JSON.stringify(result.Status)}\n`);
 
 				if(result.Status !== 'Success' && result.Status !== 'Error') {
-					childContext.waitForCondition(
+					await childContext.waitForCondition(
 						'checkPackageCreationStatus',
 						async (state, _) => {
 							process.stdout.write('in waitForCondition\n');
@@ -169,7 +169,7 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 								{env: {...process.env, ...SF_HOME}}
 							));
 							process.stdout.write(`package version create report stdout ${stdout}\n`);
-							return { ...state, status: JSON.parse(stdout).result[0].Status};
+							return { ...state, status: JSON.parse(stdout).result[0].Status };
 						},
 						{
 							initialState: {
@@ -187,10 +187,10 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 
 				process.stdout.write(`results after waitForCondition ${JSON.stringify(result)}\n`);
 				//process.exit(1);
-				({ stdout, stderr } = await exec(
+				/*({ stdout, stderr } = await exec(
 					`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${JSON.parse(JSON.stringify(result)).Id} -v ${process.env.HUB_ALIAS} --json`,
 					{env: {...process.env, ...SF_HOME}}
-				));
+				));*/
 				if(stderr) error.fatal('updatePackages()', stderr);
 				process.stdout.write(`Releasing package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
 				let subscriberPackageVersionId = result.SubscriberPackageVersionId;
