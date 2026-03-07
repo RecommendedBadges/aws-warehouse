@@ -142,65 +142,42 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion + PACKAGE_VERSION_INCREMENT}` :
 					`${latestPackageVersion.MajorVersion}.${latestPackageVersion.MinorVersion}`;
 				process.stdout.write(`Creating package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
-				try {
+
 				({ stdout, stderr } = await exec(
-					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -v ${process.env.HUB_ALIAS} --skip-validation --json`, // remove skip-validation later, -c
+					`${PACKAGE_VERSION_CREATE_COMMAND} -p ${packageToUpdate} -n ${newPackageVersionNumber} -a ${newPackageVersionName} -x -v ${process.env.HUB_ALIAS} -c --json`,
 					{env: {...process.env, ...SF_HOME}}
 				));
-
-				} catch(err) {
-					process.stdout.write(`stdout ${stdout}\n`);
-					process.stderr.write(`stderr ${stderr}\n`);
-					error.fatal('updatePackages()', err);
-				}
 				if(stderr) error.fatal('updatePackages()', stderr);
 				let result = JSON.parse(stdout).result;
-				process.stdout.write(`Package version creation result: ${JSON.stringify(result)}\n`);
-								process.stdout.write(`Package version creation result status: ${JSON.stringify(result.Status)}\n`);
 
 				if(result.Status !== 'Success' && result.Status !== 'Error') {
-					try {
-						result = await childContext.waitForCondition(
-							'checkPackageCreationStatus',
-							async (state, _) => {
-								process.stdout.write('in waitForCondition\n');
-								process.stdout.write(`waitForCondition state ${JSON.stringify(state)}\n`);
-								({ stdout, stderr } = await exec(
-									`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
-									{env: {...process.env, ...SF_HOME}}
-								));
-								let packageCreateReportResult = JSON.parse(stdout).result[0];
-								process.stdout.write(`package version create report stdout ${stdout}\n`);
-								return { ...state, status: packageCreateReportResult.Status, SubscriberPackageVersionId: packageCreateReportResult.SubscriberPackageVersionId};
+					result = await childContext.waitForCondition(
+						'checkPackageCreationStatus',
+						async (state, _) => {
+							process.stdout.write('in waitForCondition\n');
+							process.stdout.write(`waitForCondition state ${JSON.stringify(state)}\n`);
+							({ stdout, stderr } = await exec(
+								`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
+								{env: {...process.env, ...SF_HOME}}
+							));
+							let packageCreateReportResult = JSON.parse(stdout).result[0];
+							process.stdout.write(`package version create report stdout ${stdout}\n`);
+							return { ...state, status: packageCreateReportResult.Status, SubscriberPackageVersionId: packageCreateReportResult.SubscriberPackageVersionId};
+						},
+						{
+							initialState: {
+								requestId: result.Id,
+								status: result.Status
 							},
-							{
-								initialState: {
-									requestId: result.Id,
-									status: result.Status
-								},
-								waitStrategy: (state) => state.status === 'Success' || state.status === 'Error' ? 
-									{ shouldContinue: false } : 
-									{ shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME } }
-							}
-						)
-					} catch(err) {
-						process.stderr.write(`error line number ${err.lineNumber}\n`);
-						process.stdout.write(`stdout ${stdout}\n`);
-						process.stderr.write(`stderr ${stderr}\n`);
-						error.fatal('updatePackages()', err);
-					}
+							waitStrategy: (state) => state.status === 'Success' || state.status === 'Error' ? 
+								{ shouldContinue: false } : 
+								{ shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME } }
+						}
+					);
 				}
 
-				process.stdout.write(`results after waitForCondition ${JSON.stringify(result)}\n`);
-				//process.exit(1);
-				/*({ stdout, stderr } = await exec(
-					`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${JSON.parse(JSON.stringify(result)).Id} -v ${process.env.HUB_ALIAS} --json`,
-					{env: {...process.env, ...SF_HOME}}
-				));*/
-				if(stderr) error.fatal('updatePackages()', stderr);
 				process.stdout.write(`Releasing package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
 				let subscriberPackageVersionId = result.SubscriberPackageVersionId;
-
 				({ stdout, stderr } = await exec(
 					`${PACKAGE_VERSION_PROMOTE_COMMAND} -p ${subscriberPackageVersionId} -n --json`,
 					{env: {...process.env, ...SF_HOME}}
