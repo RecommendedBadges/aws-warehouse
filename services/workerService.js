@@ -154,14 +154,12 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 					result = await childContext.waitForCondition(
 						'checkPackageCreationStatus',
 						async (state, _) => {
-							process.stdout.write('in waitForCondition\n');
-							process.stdout.write(`waitForCondition state ${JSON.stringify(state)}\n`);
 							({ stdout, stderr } = await exec(
 								`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
 								{env: {...process.env, ...SF_HOME}}
 							));
 							let packageCreateReportResult = JSON.parse(stdout).result[0];
-							process.stdout.write(`package version create report stdout ${stdout}\n`);
+							process.stdout.write(`Package ${packageToUpdate} version ${newPackageVersionNumber} creation status is ${packageCreateReportResult.Status}\n`);
 							return { ...state, status: packageCreateReportResult.Status, SubscriberPackageVersionId: packageCreateReportResult.SubscriberPackageVersionId};
 						},
 						{
