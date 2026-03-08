@@ -1,6 +1,5 @@
 import { promisify } from 'node:util';
 import child_process from 'node:child_process';
-import { once } from 'node:events';
 import path from 'node:path';
 import fs from 'node:fs';
 
@@ -14,7 +13,7 @@ async function install() {
     let stderr;
     let stdout;
 
-   try {
+    try {
         ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz`));
         ({stdout, stderr} = await exec(`mkdir -p /tmp/cli/sf`));
         ({stdout, stderr} = await exec(`tar -xf sf-linux-x64.tar.gz -C /tmp/cli/sf --strip-components 1`));
