@@ -46,21 +46,27 @@ async function authorize() {
 }
 
 async function getRemainingPackageNumber() {
-    const {stdout, stderr} = await exec(
-        `${LIMITS_API_DISPLAY_COMMAND} -o ${process.env.HUB_ALIAS} --json`,
-        {env: {...process.env, ...SF_HOME}}
-    );
-    if(stderr) {
-        fatal('getPackageLimit()', stderr);
-    }
-    
-    let remainingPackageNumber;
-    for(let limit of JSON.parse(stdout).result) {
-        if(limit.name === PACKAGE_LIMIT_NAME) {
-            remainingPackageNumber = limit.remaining;
+    try {
+        const {stdout, stderr} = await exec(
+            `${LIMITS_API_DISPLAY_COMMAND} -o ${process.env.HUB_ALIAS} --json`,
+            {env: {...process.env, ...SF_HOME}}
+        );
+        if(stderr) {
+            fatal('getRemainingPackageNumber()', stderr);
         }
+        
+        let remainingPackageNumber;
+        for(let limit of JSON.parse(stdout).result) {
+            if(limit.name === PACKAGE_LIMIT_NAME) {
+                remainingPackageNumber = limit.remaining;
+            }
+        }
+        return remainingPackageNumber;
+    } catch(err) {
+        process.stderr.write(stderr);
+        fatal('getRemainingPackageNumber()', err);
     }
-    return remainingPackageNumber;
+    return null;
 }
 
 export {
