@@ -116,6 +116,8 @@ async function updatePackages(sortedPackagesToUpdate, context) {
 		let stdout;
 		let stderr;
 
+		let initialPackageLimit = await sfdx.getRemainingPackageNumber();
+		process.stdout.write(`Remaining package version creation limit is ${initialPackageLimit}\n`);
 		let packageLimit = await context.waitForCondition(
 			`check-package-limit-${packageToUpdate}`,
 			async (state, _) => {
@@ -124,7 +126,7 @@ async function updatePackages(sortedPackagesToUpdate, context) {
 				return { ...state, limit };
 			},
 			{
-				initialState: { limit: await sfdx.getRemainingPackageNumber() },
+				initialState: { limit: initialPackageLimit },
 				waitStrategy: (state) => state.limit > 0 ? 
 					{ shouldContinue : false } : 
 					{ shouldContinue: true, delay: { hours: process.env.PACKAGE_LIMIT_WAIT_TIME }}
