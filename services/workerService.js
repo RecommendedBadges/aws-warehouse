@@ -124,7 +124,7 @@ async function updatePackages(sortedPackagesToUpdate, context) {
 				return { ...state, limit };
 			},
 			{
-				initialState: { limit },
+				initialState: { limit: await sfdx.getRemainingPackageNumber() },
 				waitStrategy: (state) => state.limit > 0 ? 
 					{ shouldContinue : false } : 
 					{ shouldContinue: true, delay: { hours: process.env.PACKAGE_LIMIT_WAIT_TIME }}
