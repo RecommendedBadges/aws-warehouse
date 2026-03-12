@@ -33,7 +33,7 @@ let packageAliases = {};
 let reversePackageAliases = {};
 let sfdxProjectJSON = {};
 
-async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedPackages = {} }, context) {
+async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate = {} }, context) {
 	try {
 		process.stdout.write('Cloning repo\n');
 		await cloneRepo(pullRequestNumber);
@@ -44,11 +44,9 @@ async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate, updatedP
 		parseSFDXProjectJSON();
 		process.stdout.write('Authorizing sf cli\n');
 		await sfdx.authorize();
-		let packageLimit = await sfdx.getRemainingPackageNumber();
-		process.stdout.write(`Remaining package version creation limit is ${packageLimit}\n`);
 		process.stdout.write(`List of packages to update is ${sortedPackagesToUpdate.join(', ')}\n`);
 
-		updatedPackages = await updatePackages(packageLimit, sortedPackagesToUpdate, updatedPackages, context);
+		let updatedPackages = await updatePackages(sortedPackagesToUpdate, context);
 
 		await installPackages(updatedPackages);
 		await github.deletePackageLabelFromIssue(pullRequestNumber);
@@ -79,10 +77,15 @@ async function cloneRepo(pullRequestNumber) {
 	}
 
 	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
-	({ _, stderr } = await exec(
-		`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} ${GIT_REPO_FOLDER}`
-	));
-	if (stderr) error.fatal('cloneRepo()', stderr);
+	try {
+		({ _, stderr } = await exec(
+			`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} ${GIT_REPO_FOLDER}`
+		));
+		if (stderr) error.fatal('cloneRepo()', stderr);
+	} catch (err) {
+		process.stderr.write(`Error cloning repository: ${stderr}`);
+		error.fatal('cloneRepo()', err);
+	}
 
 	try {
 		process.chdir(GIT_REPO_FOLDER);
@@ -105,33 +108,36 @@ function parseSFDXProjectJSON() {
 	}
 }
 
-async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPackages, context) {
+async function updatePackages(sortedPackagesToUpdate, context) {
 	updateForceIgnore();
+	let updatedPackages = {};
 	let query;
-	const results = await context.runInChildContext( // what to do (if anything) with results?
-		'updatePackages',
-		async (childContext) => {
-			for(let packageToUpdate of sortedPackagesToUpdate) {
-				let stdout;
-				let stderr;
+	for(let packageToUpdate of sortedPackagesToUpdate) {
+		let stdout;
+		let stderr;
 
-				await childContext.waitForCondition(
-					async (state, _) => {
-						const packageLimit = await sfdx.getRemainingPackageNumber();
-						return { ...state, packageLimit };
-					},
-					{
-						initialState: { packageLimit },
-						waitStrategy: (state) => state.packageLimit > 0 ? 
-							{ shouldContinue : false } : 
-							{ shouldContinue: true, delay: { hours: process.env.PACKAGE_LIMIT_WAIT_TIME }}
-					}
-				);
+		let packageLimit = await context.waitForCondition(
+			`check-package-limit-${packageToUpdate}`,
+			async (state, _) => {
+				const limit = await sfdx.getRemainingPackageNumber();
+				process.stdout.write(`Remaining package version creation limit is ${packageLimit}\n`);
+				return { ...state, limit };
+			},
+			{
+				initialState: { limit },
+				waitStrategy: (state) => state.limit > 0 ? 
+					{ shouldContinue : false } : 
+					{ shouldContinue: true, delay: { hours: process.env.PACKAGE_LIMIT_WAIT_TIME }}
+			}
+		);
 
+		let { status, subscriberPackageVersionId, requestId, newPackageVersionNumber } = await context.step(
+			`create-package-version-${packageToUpdate}`,
+			async () => {
 				query = `SELECT MajorVersion, MinorVersion, PatchVersion, BuildNumber, IsReleased FROM Package2Version WHERE Package2.Name='${packageToUpdate}' ORDER BY MajorVersion DESC, MinorVersion DESC, PatchVersion DESC, BuildNumber DESC LIMIT 1`;
 				({ stdout, stderr } = await exec(
 					`${SOQL_QUERY_COMMAND} -q "${query}" -t -o ${process.env.HUB_ALIAS} --json`,
-				    {env: {...process.env, ...SF_HOME}}
+					{env: {...process.env, ...SF_HOME}}
 				));
 				if(stderr) error.fatal('updatePackages()', stderr);
 				let latestPackageVersion = JSON.parse(stdout).result.records[0];
@@ -149,45 +155,58 @@ async function updatePackages(packageLimit, sortedPackagesToUpdate, updatedPacka
 				));
 				if(stderr) error.fatal('updatePackages()', stderr);
 				let result = JSON.parse(stdout).result;
-
-				if(result.Status !== 'Success' && result.Status !== 'Error') {
-					result = await childContext.waitForCondition(
-						'checkPackageCreationStatus',
-						async (state, _) => {
-							({ stdout, stderr } = await exec(
-								`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${state.requestId} -v ${process.env.HUB_ALIAS} --json`,
-								{env: {...process.env, ...SF_HOME}}
-							));
-							let packageCreateReportResult = JSON.parse(stdout).result[0];
-							process.stdout.write(`Package ${packageToUpdate} version ${newPackageVersionNumber} creation status is ${packageCreateReportResult.Status}\n`);
-							return { ...state, status: packageCreateReportResult.Status, SubscriberPackageVersionId: packageCreateReportResult.SubscriberPackageVersionId};
-						},
-						{
-							initialState: {
-								requestId: result.Id,
-								status: result.Status
-							},
-							waitStrategy: (state) => state.status === 'Success' || state.status === 'Error' ? 
-								{ shouldContinue: false } : 
-								{ shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME } }
-						}
-					);
-				}
-
-				process.stdout.write(`Releasing package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
-				let subscriberPackageVersionId = result.SubscriberPackageVersionId;
-				({ stdout, stderr } = await exec(
-					`${PACKAGE_VERSION_PROMOTE_COMMAND} -p ${subscriberPackageVersionId} -n --json`,
-					{env: {...process.env, ...SF_HOME}}
-				));
-				if(stderr) error.fatal('updatePackages()', stderr);
-				updatedPackages[`${packageToUpdate}@${newPackageVersionNumber}`] = subscriberPackageVersionId;
-
-				await updatePackageJSON(packageToUpdate, newPackageVersionNumber);
-				packageLimit--;
+				return { status: result.Status, subscriberPackageVersionId: result.SubscriberPackageVersionId, requestId: result.Id, newPackageVersionNumber };
 			}
+		);
+
+		if(status !== 'Success' && status !== 'Error') {
+			({ subscriberPackageVersionId } = await context.waitForCondition(
+				`check-package-creation-status-${packageToUpdate}`,
+				async (state, _) => {
+					({ stdout, stderr } = await exec(
+						`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${requestId} -v ${process.env.HUB_ALIAS} --json`,
+						{env: {...process.env, ...SF_HOME}}
+					));
+					if(stderr) error.fatal('updatePackages()', stderr);
+					let packageCreateReportResult = JSON.parse(stdout).result[0];
+					process.stdout.write(`Package ${packageToUpdate} version ${newPackageVersionNumber} creation status is ${packageCreateReportResult.Status}\n`);
+					return { ...state, status: packageCreateReportResult.Status, subscriberPackageVersionId: packageCreateReportResult.SubscriberPackageVersionId};
+				},
+				{
+					initialState: {
+						requestId,
+						status
+					},
+					waitStrategy: (state) => state.status === 'Success' || state.status === 'Error' ?
+						{ shouldContinue: false } :
+						{ shouldContinue: true, delay: { minutes: process.env.PACKAGE_CREATE_REPORT_WAIT_TIME } }
+				}
+			));
 		}
-	);
+
+
+		query = `SELECT IsReleased FROM Package2Version WHERE SubscriberPackageVersionId='${subscriberPackageVersionId}'`;
+		({ stdout, stderr } = await exec(
+			`${SOQL_QUERY_COMMAND} -q "${query}" -t -o ${process.env.HUB_ALIAS} --json`,
+			{env: {...process.env, ...SF_HOME}}
+		));
+		if(stderr) error.fatal('updatePackages()', stderr);
+		if(!JSON.parse(stdout).result.records[0].IsReleased) {
+			process.stdout.write(`Releasing package ${packageToUpdate} version ${newPackageVersionNumber}\n`);
+			({ stdout, stderr } = await exec(
+				`${PACKAGE_VERSION_PROMOTE_COMMAND} -p ${subscriberPackageVersionId} -n --json`,
+				{env: {...process.env, ...SF_HOME}}
+			));
+			if(stderr) error.fatal('updatePackages()', stderr);
+		}
+
+		updatedPackages[packageToUpdate] = {
+			alias: `${packageToUpdate}@${newPackageVersionNumber}`,
+			subscriberPackageVersionId,
+			newPackageVersionNumber
+		};
+		await updatePackageJSON(packageToUpdate, newPackageVersionNumber);
+	}
 	return { updatedPackages };
 }
 
@@ -254,10 +273,10 @@ async function getPackageNameFromDependency(dependentPackage) {
 }
 
 async function installPackages(updatedPackages) {
-	for (let updatedPackageAlias in updatedPackages) {
-		process.stdout.write(`Installing package ${updatedPackageAlias}\n`);
+	for (let updatedPackage in updatedPackages) {
+		process.stdout.write(`Installing package ${updatedPackage.alias}\n`);
 		let { stderr } = await exec(
-			`${PACKAGE_INSTALL_COMMAND} -p ${updatedPackages[updatedPackageAlias]} -o ${process.env.HUB_ALIAS} -w ${process.env.PACKAGE_INSTALL_WAIT_TIME} -r --json`,
+			`${PACKAGE_INSTALL_COMMAND} -p ${updatedPackage.alias} -o ${process.env.HUB_ALIAS} -w ${process.env.PACKAGE_INSTALL_WAIT_TIME} -r --json`,
 			{env: {...process.env, ...SF_HOME}}
 		);
 		if (stderr) error.fatal('installPackages()', stderr);
@@ -267,13 +286,14 @@ async function installPackages(updatedPackages) {
 async function pushUpdatedPackageJSON(updatedPackages) {
 	let stderr;
 	({ stderr } = await exec(`${GIT_CHECKOUT_COMMAND} main`));
-	if (stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
+	if(stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
 
 	({ stderr } = await exec(`${GIT_PULL_COMMAND}`))
+	if(stderr) error.fatal('pushUpdatedPackageJSON()', stderr);
 
 	process.stdout.write('Updating sfdx-project.json and pushing to main');
-	for (let updatedPackageAlias in updatedPackages) {
-		sfdxProjectJSON.packageAliases[updatedPackageAlias] = updatePackages[updatedPackageAlias];
+	for (let updatedPackage in updatedPackages) {
+		sfdxProjectJSON.packageAliases[updatedPackage.alias] = updatedPackage.subscriberPackageVersionId;
 	}
 	fs.writeFileSync(SFDX_PROJECT_JSON_FILENAME, JSON.stringify(sfdxProjectJSON, null, 2));
 
