@@ -6,10 +6,10 @@
   "license": "MIT",
   "dependencies": {
     "@aws-cdk/aws-lambda": "^1.204.0",
-    "@aws-cdk/cloud-assembly-schema": "^53.1.0",
-    "@aws-sdk/client-secrets-manager": "^3.1003.0",
-    "@salesforce/cli": "^2.125.2",
-    "aws-cdk-lib": "^2.241.0",
+    "@aws-cdk/cloud-assembly-schema": "^53.5.0",
+    "@aws-sdk/client-secrets-manager": "^3.1008.0",
+    "@salesforce/cli": "^2.126.4",
+    "aws-cdk-lib": "^2.243.0",
     "axios": "^1.13.6"
   },
   "scripts": {
@@ -19,8 +19,8 @@
   "devDependencies": {
     "@aws/durable-execution-sdk-js-testing": "^1.1.1",
     "@types/aws-lambda": "^8.10.161",
-    "@types/node": "^25.3.0",
-    "esbuild": "^0.27.3",
+    "@types/node": "^25.5.0",
+    "esbuild": "^0.27.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
