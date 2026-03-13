@@ -123,7 +123,7 @@ async function updatePackages(sortedPackagesToUpdate, context) {
 			async (state, ctx) => {
 				process.stdout.write('about to check package limit\n');
 				const limit = await sfdx.getRemainingPackageNumber();
-				process.stdout.write(`Remaining package version creation limit is ${packageLimit}\n`);
+				process.stdout.write(`Remaining package version creation limit is ${limit}\n`);
 				return { ...state, limit };
 			},
 			{
