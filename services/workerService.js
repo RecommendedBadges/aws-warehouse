@@ -65,6 +65,7 @@ async function cloneRepo(pullRequestNumber) {
 	let pullRequest = await github.getOpenPullRequestDetails({ pullRequestNumber });
 	let stderr;
 
+	process.stdout.write(`Current folder contents before cloning: ${fs.readdirSync(process.cwd())}\n`);
 	if (fs.existsSync(GIT_REPO_FOLDER)) {
 		({ _, stderr } = await exec(`rm -rf ${GIT_REPO_FOLDER}`));
 		if (stderr) error.fatal('cloneRepo()', stderr);
@@ -75,6 +76,7 @@ async function cloneRepo(pullRequestNumber) {
 	} catch(err) {
 		error.fatal('cloneRepo()', err);
 	}
+	process.stdout.write('Created repository folder\n');
 
 	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
 	try {
@@ -118,10 +120,9 @@ async function updatePackages(sortedPackagesToUpdate, context) {
 
 		let initialPackageLimit = await sfdx.getRemainingPackageNumber();
 		process.stdout.write(`Remaining package version creation limit is ${initialPackageLimit}\n`);
-		let packageLimit = await context.waitForCondition(
+		await context.waitForCondition(
 			`check-package-limit-${packageToUpdate}`,
-			async (state, ctx) => {
-				process.stdout.write('about to check package limit\n');
+			async (state, _) => {
 				const limit = await sfdx.getRemainingPackageNumber();
 				process.stdout.write(`Remaining package version creation limit is ${limit}\n`);
 				return { ...state, limit };

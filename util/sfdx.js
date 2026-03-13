@@ -46,7 +46,6 @@ async function authorize() {
 }
 
 async function getRemainingPackageNumber() {
-    process.stdout.write('in getRemainingPackageNumber()\n');
     const {stdout, stderr} = await exec(
         `${LIMITS_API_DISPLAY_COMMAND} -o ${process.env.HUB_ALIAS} --json`,
         {env: {...process.env, ...SF_HOME}}
@@ -54,38 +53,14 @@ async function getRemainingPackageNumber() {
     if(stderr) {
         fatal('getRemainingPackageNumber()', stderr);
     }
-    process.stdout.write('after exec of limits command\n');
     
     let remainingPackageNumber;
-    process.stdout.write('declared remainingPackageNumber\n');
     for(let limit of JSON.parse(stdout).result) {
         if(limit.name === PACKAGE_LIMIT_NAME) {
             remainingPackageNumber = limit.remaining;
         }
     }
-    process.stdout.write('after for loop\n');
     return remainingPackageNumber;
-    /*try {
-        const {stdout, stderr} = await exec(
-            `${LIMITS_API_DISPLAY_COMMAND} -o ${process.env.HUB_ALIAS} --json`,
-            {env: {...process.env, ...SF_HOME}}
-        );
-        if(stderr) {
-            fatal('getRemainingPackageNumber()', stderr);
-        }
-        
-        let remainingPackageNumber;
-        for(let limit of JSON.parse(stdout).result) {
-            if(limit.name === PACKAGE_LIMIT_NAME) {
-                remainingPackageNumber = limit.remaining;
-            }
-        }
-        return remainingPackageNumber;
-    } catch(err) {
-        process.stderr.write(stderr);
-        fatal('getRemainingPackageNumber()', err);
-    }
-    return null;*/
 }
 
 export {
