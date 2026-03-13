@@ -54,13 +54,16 @@ async function getRemainingPackageNumber() {
     if(stderr) {
         fatal('getRemainingPackageNumber()', stderr);
     }
+    process.stdout.write('after exec of limits command\n');
     
     let remainingPackageNumber;
+    process.stdout.write('declared remainingPackageNumber\n');
     for(let limit of JSON.parse(stdout).result) {
         if(limit.name === PACKAGE_LIMIT_NAME) {
             remainingPackageNumber = limit.remaining;
         }
     }
+    process.stdout.write('after for loop\n');
     return remainingPackageNumber;
     /*try {
         const {stdout, stderr} = await exec(
