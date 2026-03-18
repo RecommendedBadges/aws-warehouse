@@ -66,27 +66,24 @@ async function cloneRepo(pullRequestNumber) {
 	let stderr;
 
 	process.stdout.write(`Current folder contents before cloning: ${fs.readdirSync(process.cwd())}\n`);
-	if (fs.existsSync(GIT_REPO_FOLDER)) {
-		({ _, stderr } = await exec(`rm -rf ${GIT_REPO_FOLDER}`));
-		if (stderr) error.fatal('cloneRepo()', stderr);
-	}
+	if (!fs.existsSync(GIT_REPO_FOLDER)) {
+		try {
+			fs.mkdirSync(GIT_REPO_FOLDER);
+		} catch(err) {
+			error.fatal('cloneRepo()', err);
+		}
+		process.stdout.write('Created repository folder\n');
 
-	try {
-		fs.mkdirSync(GIT_REPO_FOLDER);
-	} catch(err) {
-		error.fatal('cloneRepo()', err);
-	}
-	process.stdout.write('Created repository folder\n');
-
-	const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
-	try {
-		({ _, stderr } = await exec(
-			`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} ${GIT_REPO_FOLDER}`
-		));
-		if (stderr) error.fatal('cloneRepo()', stderr);
-	} catch (err) {
-		process.stderr.write(`Error cloning repository: ${stderr}`);
-		error.fatal('cloneRepo()', err);
+		const gitConfigVars = await secretsManager.getSecret('warehouse/gitConfigVars');
+		try {
+			({ _, stderr } = await exec(
+				`${GIT_CLONE_COMMAND} -q https://${gitConfigVars.GITHUB_USERNAME}:${gitConfigVars.GITHUB_TOKEN}@${process.env.REPOSITORY_URL} -b ${pullRequest.head.ref} ${GIT_REPO_FOLDER}`
+			));
+			if (stderr) error.fatal('cloneRepo()', stderr);
+		} catch (err) {
+			process.stderr.write(`Error cloning repository: ${stderr}`);
+			error.fatal('cloneRepo()', err);
+		}
 	}
 
 	try {
@@ -164,7 +161,7 @@ async function updatePackages(sortedPackagesToUpdate, context) {
 		);
 
 		if(status !== 'Success' && status !== 'Error') {
-			({ subscriberPackageVersionId } = await context.waitForCondition(
+			({ subscriberPackageVersionId, status } = await context.waitForCondition(
 				`check-package-creation-status-${packageToUpdate}`,
 				async (state, _) => {
 					({ stdout, stderr } = await exec(
@@ -188,6 +185,9 @@ async function updatePackages(sortedPackagesToUpdate, context) {
 			));
 		}
 
+		if(status === 'Error') {
+			error.fatal('updatePackages()', `Package version creation failed for package ${packageToUpdate}: ${stderr}`);
+		}
 
 		query = `SELECT IsReleased FROM Package2Version WHERE SubscriberPackageVersionId='${subscriberPackageVersionId}'`;
 		({ stdout, stderr } = await exec(
