@@ -35,7 +35,6 @@ let sfdxProjectJSON = {};
 
 async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate = {} }, context) {
 	try {
-		process.stdout.write('Cloning repo\n');
 		await cloneRepo(pullRequestNumber);
 
 		process.stdout.write('Installing sf cli\n');
@@ -65,8 +64,8 @@ async function cloneRepo(pullRequestNumber) {
 	let pullRequest = await github.getOpenPullRequestDetails({ pullRequestNumber });
 	let stderr;
 
-	process.stdout.write(`Current folder contents before cloning: ${fs.readdirSync(process.cwd())}\n`);
 	if (!fs.existsSync(GIT_REPO_FOLDER)) {
+		process.stdout.write('Cloning repo\n');
 		try {
 			fs.mkdirSync(GIT_REPO_FOLDER);
 		} catch(err) {
@@ -161,9 +160,11 @@ async function updatePackages(sortedPackagesToUpdate, context) {
 		);
 
 		if(status !== 'Success' && status !== 'Error') {
+			process.stdout.write(`About to check creation status for package ${packageToUpdate}\n`);
 			({ subscriberPackageVersionId, status } = await context.waitForCondition(
 				`check-package-creation-status-${packageToUpdate}`,
 				async (state, _) => {
+					process.stdout.write(`In check function for status for package ${packageToUpdate}\n`);
 					({ stdout, stderr } = await exec(
 						`${PACKAGE_VERSION_CREATE_REPORT_COMMAND} -i ${requestId} -v ${process.env.HUB_ALIAS} --json`,
 						{env: {...process.env, ...SF_HOME}}

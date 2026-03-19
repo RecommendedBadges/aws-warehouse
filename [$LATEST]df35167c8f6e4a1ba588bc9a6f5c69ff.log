@@ -1,0 +1,38 @@
+2026-03-18T11:25:38.815-04:00	{"time":"2026-03-18T11:25:38.815Z","type":"platform.start","record":{"requestId":"6b6f60d6-958c-45ed-bed1-424a05bb878a","functionArn":"arn:aws:lambda:us-east-1:671216071139:function:DurableContainerPackagingLambda:$LATEST","version":"$LATEST"}}
+2026-03-18T11:25:38.823-04:00	Cloning repo
+2026-03-18T11:25:39.467-04:00	Current folder contents before cloning: index.js,index.js.map,node_modules,package-lock.json,package.json
+2026-03-18T11:25:39.467-04:00	Created repository folder
+2026-03-18T11:25:41.739-04:00	Installing sf cli
+2026-03-18T11:25:48.844-04:00	Parsing sfdx-project.json
+2026-03-18T11:25:48.845-04:00	Authorizing sf cli
+2026-03-18T11:25:54.103-04:00	List of packages to update is Core, Triggers, SortCustomMetadata, PrivateMixView, RecommendedArticles, RecommendedBadgeMix, UserInterface
+2026-03-18T11:26:00.359-04:00	Remaining package version creation limit is 10
+2026-03-18T11:26:06.803-04:00	Remaining package version creation limit is 10
+2026-03-18T11:26:13.125-04:00	Creating package Core version 2.29.0.2
+2026-03-18T11:26:29.719-04:00	Package Core version 2.29.0.2 creation status is Initializing
+2026-03-18T11:26:29.842-04:00	{"time":"2026-03-18T11:26:29.842Z","type":"platform.report","record":{"requestId":"6b6f60d6-958c-45ed-bed1-424a05bb878a","metrics":{"durationMs":51026.625,"billedDurationMs":52301,"memorySizeMB":1024,"maxMemoryUsedMB":724,"initDurationMs":1273.547},"status":"success"}}
+2026-03-18T11:31:29.846-04:00	{"time":"2026-03-18T11:31:29.846Z","type":"platform.start","record":{"requestId":"5a7b5861-d582-4a2a-a0d1-d4c9baef794f","functionArn":"arn:aws:lambda:us-east-1:671216071139:function:DurableContainerPackagingLambda:$LATEST","version":"$LATEST"}}
+2026-03-18T11:31:29.862-04:00	Cloning repo
+2026-03-18T11:31:30.082-04:00	Current folder contents before cloning: .circleci,.custompmdrules.xml,.eslintignore,.eslintrc.json,.forceignore,.git,.gitignore,.prettierignore,.prettierrc,.sf,.sfdx,.vscode,ApexDoxHomePage.html,Core,LWCErrorHandler,LWCUtils,PrivateMixView,README.md,RecommendedArticles,RecommendedBadgeMix,RecommendedBadges_ERD.png,RecommendedBadges_Package_Dependencies.png,SortCustomMetadata,Triggers,UserInterface,apexdox.yaml,code-analyzer.yml,config,documentation,fflib,jest.config.js,node-scripts,package-lock.json,package.json,sampleDataPopulation.sh,scratchOrgSetup.sh,sf-linux-x64.tar.gz,sfdx-project.json,unpackageable
+2026-03-18T11:31:30.082-04:00	Installing sf cli
+2026-03-18T11:31:38.225-04:00	Parsing sfdx-project.json
+2026-03-18T11:31:38.225-04:00	Authorizing sf cli
+2026-03-18T11:31:42.463-04:00	List of packages to update is Core, Triggers, SortCustomMetadata, PrivateMixView, RecommendedArticles, RecommendedBadgeMix, UserInterface
+2026-03-18T11:31:48.839-04:00	Remaining package version creation limit is 9
+2026-03-18T11:31:55.698-04:00	Package Core version 2.29.0.2 creation status is VerifyingMetadata
+2026-03-18T11:31:55.840-04:00	{"time":"2026-03-18T11:31:55.840Z","type":"platform.report","record":{"requestId":"5a7b5861-d582-4a2a-a0d1-d4c9baef794f","metrics":{"durationMs":25993.668,"billedDurationMs":25994,"memorySizeMB":1024,"maxMemoryUsedMB":775},"status":"success"}}
+2026-03-18T11:36:55.838-04:00	{"time":"2026-03-18T11:36:55.838Z","type":"platform.start","record":{"requestId":"d3c86ac8-b17b-439a-b4fe-f103b28a60ba","functionArn":"arn:aws:lambda:us-east-1:671216071139:function:DurableContainerPackagingLambda:$LATEST","version":"$LATEST"}}
+2026-03-18T11:36:55.839-04:00	Cloning repo
+2026-03-18T11:36:56.019-04:00	Current folder contents before cloning: .circleci,.custompmdrules.xml,.eslintignore,.eslintrc.json,.forceignore,.git,.gitignore,.prettierignore,.prettierrc,.sf,.sfdx,.vscode,ApexDoxHomePage.html,Core,LWCErrorHandler,LWCUtils,PrivateMixView,README.md,RecommendedArticles,RecommendedBadgeMix,RecommendedBadges_ERD.png,RecommendedBadges_Package_Dependencies.png,SortCustomMetadata,Triggers,UserInterface,apexdox.yaml,code-analyzer.yml,config,documentation,fflib,jest.config.js,node-scripts,package-lock.json,package.json,sampleDataPopulation.sh,scratchOrgSetup.sh,sf-linux-x64.tar.gz,sf-linux-x64.tar.gz.1,sfdx-project.json,unpackageable
+2026-03-18T11:36:56.019-04:00	Installing sf cli
+2026-03-18T11:37:04.211-04:00	Parsing sfdx-project.json
+2026-03-18T11:37:04.211-04:00	Authorizing sf cli
+2026-03-18T11:37:08.364-04:00	List of packages to update is Core, Triggers, SortCustomMetadata, PrivateMixView, RecommendedArticles, RecommendedBadgeMix, UserInterface
+2026-03-18T11:37:14.598-04:00	Remaining package version creation limit is 9
+2026-03-18T11:37:21.701-04:00	Package Core version 2.29.0.2 creation status is Success
+2026-03-18T11:37:27.664-04:00	Releasing package Core version 2.29.0.2
+2026-03-18T11:37:40.941-04:00	Remaining package version creation limit is 9
+2026-03-18T11:37:46.659-04:00	Remaining package version creation limit is 9
+2026-03-18T11:37:52.860-04:00	Creating package Triggers version 2.24.0.2
+2026-03-18T11:38:09.018-04:00	Package Triggers version 2.24.0.2 creation status is Initializing
+2026-03-18T11:38:09.120-04:00	{"time":"2026-03-18T11:38:09.120Z","type":"platform.report","record":{"requestId":"d3c86ac8-b17b-439a-b4fe-f103b28a60ba","metrics":{"durationMs":73281.251,"billedDurationMs":73282,"memorySizeMB":1024,"maxMemoryUsedMB":844},"status":"success"}}

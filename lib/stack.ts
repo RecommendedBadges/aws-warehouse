@@ -25,6 +25,7 @@ export class DurableFunctionStack extends cdk.Stack {
 			},
 			memorySize: 1024,
 			timeout: cdk.Duration.minutes(10),
+			retryAttempts: 0
 		});
 
 		const version = durableFunction.currentVersion;
