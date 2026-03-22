@@ -13,6 +13,9 @@ async function install() {
     let stderr;
     let stdout;
 
+    ({stdout, stderr} = await exec(`sf -v`));
+    if(!stderr) return;
+
     try {
         ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz`));
         ({stdout, stderr} = await exec(`mkdir -p /tmp/cli/sf`));
