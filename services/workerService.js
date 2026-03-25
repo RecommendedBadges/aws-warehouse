@@ -36,8 +36,6 @@ let sfdxProjectJSON = {};
 async function orchestrate({ pullRequestNumber, sortedPackagesToUpdate = {} }, context) {
 	try {
 		await cloneRepo(pullRequestNumber);
-
-		process.stdout.write('Installing sf cli\n');
 		await sfdx.install();
 		process.stdout.write('Parsing sfdx-project.json\n');
 		parseSFDXProjectJSON();
