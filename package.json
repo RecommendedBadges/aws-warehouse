@@ -7,7 +7,7 @@
   "dependencies": {
     "@aws-cdk/aws-lambda": "^1.204.0",
     "@aws-cdk/cloud-assembly-schema": "^53.7.0",
-    "@aws-sdk/client-secrets-manager": "^3.1016.0",
+    "@aws-sdk/client-secrets-manager": "^3.1018.0",
     "@salesforce/cli": "^2.128.5",
     "aws-cdk-lib": "^2.244.0",
     "axios": "^1.13.6"
