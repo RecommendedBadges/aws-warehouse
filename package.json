@@ -9,7 +9,7 @@
     "@aws-cdk/cloud-assembly-schema": "^53.12.0",
     "@aws-sdk/client-secrets-manager": "^3.1022.0",
     "@salesforce/cli": "^2.129.8",
-    "aws-cdk-lib": "^2.246.0",
+    "aws-cdk-lib": "^2.247.0",
     "axios": "^1.14.0"
   },
   "scripts": {
