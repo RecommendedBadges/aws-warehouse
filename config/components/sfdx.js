@@ -8,6 +8,8 @@ const PACKAGE_VERSION_ID_PREFIX = '04t';
 const PACKAGE_VERSION_INCREMENT = 1;
 const SFDX_PROJECT_JSON_FILENAME = './sfdx-project.json';
 const SF_HOME = {HOME: '/tmp/'};
+const SF_PATH = path.join('/tmp', 'cli', 'sf');
+const SF_TAR = 'sf-linux-x64.tar.gz';
 
 const AUTH_JWT_GRANT_COMMAND = `sf org login jwt`;
 const LIMITS_API_DISPLAY_COMMAND = `sf limits api display`;
@@ -34,5 +36,7 @@ export {
     PACKAGE_VERSION_PROMOTE_COMMAND,
     SFDX_PROJECT_JSON_FILENAME,
     SOQL_QUERY_COMMAND,
-    SF_HOME
+    SF_HOME,
+    SF_PATH,
+    SF_TAR
 };
