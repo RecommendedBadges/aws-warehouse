@@ -5,7 +5,7 @@ import fs from 'node:fs';
 
 import { fatal } from './error.js';
 import { getSecret } from './secretsManager.js';
-import { AUTH_JWT_GRANT_COMMAND, CLI_SERVICE_AGREEMENT, LIMITS_API_DISPLAY_COMMAND, PACKAGE_LIMIT_NAME, SF_HOME} from '../config';
+import { AUTH_JWT_GRANT_COMMAND, CLI_SERVICE_AGREEMENT, LIMITS_API_DISPLAY_COMMAND, PACKAGE_LIMIT_NAME, SF_HOME, SF_PATH, SF_TAR} from '../config';
 
 const exec = promisify(child_process.exec);
 
@@ -17,17 +17,49 @@ async function install() {
         ({stdout, stderr} = await exec(`sf -v`));
         return;
     } catch(err) {
-        process.stdout.write('Installing sf cli\n');
+        process.stdout.write('Installing SF cli... \n');
     }
 
+    const sfBinExists = fs.existsSync(`${SF_PATH}/bin/`)
+    const sfPathExists = fs.existsSync(`${SF_PATH}/`)
+    const sfTarExists = fs.existsSync(`${SF_TAR}`);
+
     try {
-        ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz`));
-        ({stdout, stderr} = await exec(`mkdir -p /tmp/cli/sf`));
-        ({stdout, stderr} = await exec(`tar -xf sf-linux-x64.tar.gz -C /tmp/cli/sf --strip-components 1`));
-        process.env.PATH = '/tmp/cli/sf/bin/:' + process.env.PATH;
+        if(sfBinExists) {
+            addSFCliToPath();
+            return;
+        } else if(sfTarExists && !sfPathExists) {
+            makeSFPathDir();
+            uncompressSFCliTar();
+            addSFCliToPath();
+            return;
+        } else if(sfTarExists && sfPathExists) {
+            uncompressSFCliTar();
+            addSFCliToPath();
+            return;
+        } else {
+            ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/${SF_TAR}`));
+            makeSFPathDir();
+            uncompressSFCliTar();
+            addSFCliToPath();
+        }
     } catch(err) {
         fatal('install()', err);
     }
+}
+
+function addSFCliToPath() {
+    process.env.PATH = `${SF_PATH}/bin/:` + process.env.PATH;
+}
+
+async function makeSFPathDir() {
+    const {_, stderr} = await exec(`mkdir -p ${SF_PATH}`);
+    if(stderr) fatal('makeSFPathDir()', stderr);
+}
+
+async function uncompressSFCliTar() {
+    const {_, stderr} = await exec(`tar -xf ${SF_TAR} -C ${SF_PATH} --strip-components 1`);
+    if(stderr) fatal('uncompressSFCliTar()', stderr);
 }
 
 async function authorize() {
