@@ -17,7 +17,7 @@ async function install() {
         ({stdout, stderr} = await exec(`sf -v`));
         return;
     } catch(err) {
-        process.stdout.write('Installing SF cli... \n');
+        process.stdout.write('Installing SF cli\n');
     }
 
     const sfBinExists = fs.existsSync(`${SF_PATH}/bin/`)
@@ -38,6 +38,7 @@ async function install() {
             addSFCliToPath();
             return;
         } else {
+            process.stdout.write('Downloading SF CLI\n');
             ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/${SF_TAR}`));
             makeSFPathDir();
             uncompressSFCliTar();
@@ -49,15 +50,18 @@ async function install() {
 }
 
 function addSFCliToPath() {
+    process.stdout.write('Adding SF CLI to PATH\n');
     process.env.PATH = `${SF_PATH}/bin/:` + process.env.PATH;
 }
 
 async function makeSFPathDir() {
+    process.stdout.write(`Creating directory for SF CLI at ${SF_PATH}\n`);
     const {_, stderr} = await exec(`mkdir -p ${SF_PATH}`);
     if(stderr) fatal('makeSFPathDir()', stderr);
 }
 
 async function uncompressSFCliTar() {
+    process.stdout.write(`Uncompressing SF CLI tar at ${SF_TAR}\n`);
     const {_, stderr} = await exec(`tar -xf ${SF_TAR} -C ${SF_PATH} --strip-components 1`);
     if(stderr) fatal('uncompressSFCliTar()', stderr);
 }
