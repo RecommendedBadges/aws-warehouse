@@ -46,7 +46,7 @@ async function install() {
             return;
         } else {
             process.stdout.write('Downloading SF CLI\n');
-            ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/${SF_TAR}`));
+            ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable-rc/${SF_TAR}`));
             makeSFPathDir();
             uncompressSFCliTar();
             addSFCliToPath();
