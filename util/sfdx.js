@@ -20,6 +20,13 @@ async function install() {
         process.stdout.write('Installing SF cli\n');
     }
 
+    try {
+        ({stdout, stderr} = await exec(`ls ${SF_PATH}`));
+        process.stdout.write(`SF CLI path ls ${stdout}\n`);
+    } catch(err) {
+        process.stdout.write('Error listing directory for SF CLI\n');
+    }
+
     const sfBinExists = fs.existsSync(`${SF_PATH}/bin/`)
     const sfPathExists = fs.existsSync(`${SF_PATH}/`)
     const sfTarExists = fs.existsSync(`${SF_TAR}`);
