@@ -58,7 +58,7 @@ async function install() {
 
 function addSFCliToPath() {
     process.stdout.write('Adding SF CLI to PATH\n');
-    process.env.PATH = `${SF_PATH}/bin/:` + process.env.PATH;
+    process.env.PATH = `${SF_PATH}/bin/:${process.env.PATH}`;
 }
 
 async function makeSFPathDir() {
@@ -85,7 +85,7 @@ async function authorize() {
     try{
         ({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
-            {env: {...process.env, ...SF_HOME}}
+            {env: {...process.env, ...SF_HOME, ...SF_PATH}}
         ));
         if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
             fatal('authorize()', stderr);
