@@ -46,7 +46,7 @@ async function install() {
             return;
         } else {
             process.stdout.write('Downloading SF CLI\n');
-            ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable-rc/${SF_TAR}`));
+            ({stdout, stderr} = await exec(`wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/${SF_TAR}`));
             makeSFPathDir();
             uncompressSFCliTar();
             addSFCliToPath();
@@ -86,7 +86,7 @@ async function authorize() {
         process.stdout.write(`Path is ${process.env.PATH}\n`);
         ({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
-            {env: {...process.env, ...SF_HOME}}
+            {env: {...process.env, ...SF_HOME, UV_USE_IO_URING: 0}}
         ));
         if(stderr && !stderr.includes(CLI_SERVICE_AGREEMENT)) {
             fatal('authorize()', stderr);
