@@ -83,6 +83,7 @@ async function authorize() {
     }
 
     try{
+        process.stdout.write(`Path is ${process.env.PATH}\n`);
         ({_, stderr} = await exec(
             `${AUTH_JWT_GRANT_COMMAND} -i ${AUTH_SECRETS.HUB_CONSUMER_KEY} -f ${path.join('/tmp', 'server.key')} -o ${AUTH_SECRETS.HUB_USERNAME} -d -a ${process.env.HUB_ALIAS}`,
             {env: {...process.env, ...SF_HOME, ...SF_PATH}}
