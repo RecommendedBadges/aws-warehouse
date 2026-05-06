@@ -6,7 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@aws-cdk/aws-lambda": "^1.204.0",
-    "@aws-cdk/cloud-assembly-schema": "^53.20.0",
+    "@aws-cdk/cloud-assembly-schema": "^53.22.0",
     "@aws-sdk/client-secrets-manager": "^3.1043.0",
     "@salesforce/cli": "^2.133.4",
     "aws-cdk-lib": "^2.252.0",
